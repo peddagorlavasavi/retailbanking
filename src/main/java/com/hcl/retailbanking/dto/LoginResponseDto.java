@@ -7,7 +7,5 @@ import lombok.Setter;
 @Setter
 public class LoginResponseDto {
 	private Integer userId;
-	private Long accountNumber;
-	private String userName;
-	private String status;
+	private String role;
 }
