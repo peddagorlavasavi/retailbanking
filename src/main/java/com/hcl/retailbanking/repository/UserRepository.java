@@ -27,6 +27,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	 * 
 	 * @description the method getUserByMobileNumber() will return an user based on
 	 *              the mobile number provided.
+	 * based on the mobile number provided.
 	 * @param mobileNumber
 	 * @return
 	 */
@@ -35,7 +36,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	User findByMobileNumberAndPassword(String mobileNumber, String password);
 
-	//Optional<User> findByUserIdAndRole(Integer userId, String role);
 
 	@Query("select u from User u where u.userId =:userId and u.role =:role")
 	User getAdmin(@Param("userId") Integer userId, @Param("role") String role);
@@ -43,6 +43,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	@Query("select u from User u where u.role =:role")
 	List<User> getByRole(@Param("role") String role);
 
-	//List<User> findByRole(String role);
 
 }

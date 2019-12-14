@@ -23,5 +23,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	 */
 	public Account findAccountNumberByUserId(Integer userId);
 
+	@Query("select a from Account a where a.userId=:userId and a.accountType=:accountType")
+	public Account getAccountByUserIdAndAccountType(@Param("userId") Integer userId,@Param("accountType") String accountType);
+
 
 }

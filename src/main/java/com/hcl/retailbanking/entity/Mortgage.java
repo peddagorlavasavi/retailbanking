@@ -9,6 +9,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Mortgage {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer mortgageId;
@@ -30,6 +32,9 @@ public class Mortgage {
 	private Double amount;
 	private Integer tenure;
 	private Double emi;
+	
+	@Transient
+	private Integer customerId;
 
 	@JsonIgnore
 	@OneToOne

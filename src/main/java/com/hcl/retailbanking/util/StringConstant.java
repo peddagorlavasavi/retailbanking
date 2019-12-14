@@ -13,8 +13,9 @@ public class StringConstant {
 	public static final String DEACTIVE_STATUS = "DEACTIVE";
 	
 	public static final String USER_STATUS = "ACTIVE";
-	public static final String ACCOUNT_TYPE = "SAVINGS"
-			+ "";
+	public static final String SAVINGS_ACCOUNT_TYPE = "SAVINGS";
+	public static final String MORTGAGE_ACCOUNT_TYPE = "MORTGAGE";
+			
 	public static final String IFSC_CODE = "SBI000012";
 	
 	public static final String REGISTRATION_STATUS = "Registered Successfully";
@@ -34,5 +35,8 @@ public class StringConstant {
 	public static final String AGE_VALIDATION_FAILED ="Age should be greater than 18";
 	
 	public static final String MOBILE_VALIDATION_FAILED = "Mobile Number already exists.Require new mobile number for registration.";
+	
+	public static final String ADMIN_ROLE = "ADMIN";
+	public static final String CUSTOMER_ROLE = "CUSTOMER";
 }
 

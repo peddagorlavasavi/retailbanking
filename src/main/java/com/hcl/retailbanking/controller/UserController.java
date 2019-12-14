@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hcl.retailbanking.dto.LoginRequestDto;
-import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.UserListResponseDto;
@@ -52,10 +50,11 @@ public class UserController {
 	 */
 	
 	@PostMapping("")
-	public ResponseEntity<RegisterResponseDto> saveUser(@Valid @RequestBody UserDto userDto)
+	public ResponseEntity<RegisterResponseDto> createAccount(@Valid @RequestBody UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
+
 		logger.info("saveUser is used to save the user details");
-		RegisterResponseDto registerResponseDto = userService.saveUser(userDto);
+		RegisterResponseDto registerResponseDto = userService.createAccount(userDto);
 		if (registerResponseDto != null) {
 			return new ResponseEntity<>(registerResponseDto, HttpStatus.OK);
 		}

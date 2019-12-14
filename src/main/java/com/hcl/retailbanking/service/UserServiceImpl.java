@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hcl.retailbanking.dto.LoginRequestDto;
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
@@ -24,6 +24,8 @@ import com.hcl.retailbanking.exception.PasswordInvalidException;
 import com.hcl.retailbanking.repository.AccountRepository;
 import com.hcl.retailbanking.repository.MortgageRepository;
 import com.hcl.retailbanking.repository.UserRepository;
+import com.hcl.retailbanking.util.AccountComposer;
+import com.hcl.retailbanking.util.ApiConstant;
 import com.hcl.retailbanking.util.StringConstant;
 import com.hcl.retailbanking.util.Utils;
 
@@ -47,6 +49,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	AccountService accountService;
+	
+	@Qualifier(value="accountComposer")
+	@Autowired
+	AccountComposer<UserDto, User> accountComposer;
 
 	@Autowired
 	AccountRepository accountRepository;
@@ -55,7 +61,7 @@ public class UserServiceImpl implements UserService {
 	MortgageRepository mortgagerepository;
 
 	/**
-	 * saveUser is the method used to save the user details
+	 * @description This is the method used to save the user details
 	 * 
 	 * @throws PasswordInvalidException
 	 * @throws AgeNotMatchedException
@@ -64,18 +70,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public RegisterResponseDto saveUser(UserDto userDto)
+	public RegisterResponseDto createAccount(UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
 		// log.info("saveUser is used to store user details");
 		Account account = new Account();
 		RegisterResponseDto registerResponseDto = new RegisterResponseDto();
+
 		User userDetails = userRepository.getUserByMobileNumber(userDto.getMobileNumber());
+
 		if (userDetails == null) {
 			if (Utils.calculateAge(userDto.getDob()) >= StringConstant.MIN_AGE) {
+				
 				if (userDto.getPassword().length() >= StringConstant.PASSWORD_LENGTH) {
-					User user = setUserData(userDto);
+					User user=accountComposer.compose(userDto);
 					userRepository.save(user);
-					account = accountService.generateAccount(user.getUserId());
+					account = accountService.generateAccount(user.getUserId(), StringConstant.SAVINGS_ACCOUNT_TYPE);
 					registerResponseDto.setMessage(StringConstant.REGISTRATION_STATUS);
 					registerResponseDto.setAccountNumber(account.getAccountNumber());
 					registerResponseDto.setBalance(account.getBalance());
@@ -91,49 +100,7 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	/**
-	 * setUserData()
-	 * 
-	 * @description this method is used to set user object
-	 * @param userDto
-	 * @return
-	 */
-	private User setUserData(UserDto userDto) {
-		User user = new User();
-		user.setFirstName(userDto.getFirstName());
-		user.setLastName(userDto.getLastName());
-		user.setDob(userDto.getDob());
-		user.setMobileNumber(userDto.getMobileNumber());
-		user.setEmail(userDto.getEmail());
-		user.setTypeOfId(userDto.getTypeOfId());
-		user.setIdProofNumber(userDto.getIdProofNumber());
-		user.setAge(Utils.calculateAge(userDto.getDob()));
-		user.setAddress(userDto.getAddress());
-		user.setPassword(userDto.getPassword());
-		user.setGender(userDto.getGender());
-		user.setStatus(StringConstant.USER_STATUS);
-		return user;
-	}
 
-	/**
-	 * loginUser()
-	 * 
-	 * @description loginUser is the method used to login into user account
-	 * @param mobileNumber
-	 * @param password
-	 * @return
-	 */
-	/*
-	 * @Override public LoginResponseDto loginUser(LoginRequestDto loginRequestDto)
-	 * { logger.info("loginUser is used to verify the user"); User user =
-	 * userRepository.findByMobileNumberAndPassword(loginRequestDto.getMobileNumber(
-	 * ), loginRequestDto.getPassword()); LoginResponseDto loginResponseDto = new
-	 * LoginResponseDto(); if (user.getRole().equalsIgnoreCase(StringConstant.ROLE))
-	 * { BeanUtils.copyProperties(user, loginResponseDto); return loginResponseDto;
-	 * } else { BeanUtils.copyProperties(user, loginResponseDto); return
-	 * loginResponseDto; } }
-	 */
-	
 	/**
 	 * @description -> getAllUser is used to get all users
 	 * @param userId
@@ -169,5 +136,27 @@ public class UserServiceImpl implements UserService {
 		}
 		return userListResponseDtoList;
 	}
+	
+	public LoginResponseDto loginUser(String mobileNumber, String password) {
+		log.info("loginUser is used to verify the user");
+		User user = userRepository.getUserByMobileNumber(mobileNumber);
+		LoginResponseDto apiLoginInfoDto = new LoginResponseDto();
+		if (user != null && user.getPassword().equals(password)) {
+			Account account = accountService.getAccountDetails(user.getUserId());
+			if (account != null) {
+				apiLoginInfoDto.setUserId(account.getUserId());
+				apiLoginInfoDto.setAccountNumber(account.getAccountNumber());
+				apiLoginInfoDto.setUserName(user.getFirstName());
+				apiLoginInfoDto.setRole(user.getRole());
+				apiLoginInfoDto.setStatus(ApiConstant.LOGIN_SUCCESS);
+			} else {
+				apiLoginInfoDto.setStatus(ApiConstant.LOGIN_FAILED);
+			}
+		} else {
+			apiLoginInfoDto.setStatus(ApiConstant.FAILED);
+		}
+		return apiLoginInfoDto;
+	}
+		
 
 }
