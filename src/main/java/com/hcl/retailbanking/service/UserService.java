@@ -9,7 +9,7 @@ import com.hcl.retailbanking.exception.PasswordInvalidException;
 
 public interface UserService {
 
-	public RegisterResponseDto saveUser(UserDto userDto)
+	public RegisterResponseDto createAccount(UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException;
 
 	public LoginResponseDto loginUser(String mobileNumber, String password);

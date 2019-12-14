@@ -11,7 +11,6 @@ import com.hcl.retailbanking.entity.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
-	 * findUserByUserId()
 	 * @description this method will return an user object based on userid
 	 * 
 	 * @param userId
@@ -20,7 +19,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	User findUserByUserId(Integer userId);
 	
 	/**
-	 * getUserByMobileNumber()
 	 * @description the method getUserByMobileNumber() will return an user 
 	 * based on the mobile number provided.
 	 * @param mobileNumber

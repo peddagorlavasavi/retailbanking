@@ -1,6 +1,7 @@
 package com.hcl.retailbanking.controller;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,10 @@ public class TransactionController {
 		@PostMapping("/monthTransaction")
 		public ResponseEntity<AccountSummaryResponseDto> viewTransaction(@RequestBody TransactionDto transactionDto) {
 			AccountSummaryResponseDto apiResponseDto = new AccountSummaryResponseDto();
-			if (transactionDto.getMonth() != null && transactionDto.getYear() != null
+			
+			//Predicate<Boolean> predicate= t->transactionDto.getYear() != null;
+					
+			if (transactionDto.getMonth() != null && transactionDto.getYear()!=null
 					&& transactionDto.getUserId() != null) {
 
 				List<Transaction> transactions = transactionService.viewTransactions(transactionDto);

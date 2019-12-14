@@ -47,10 +47,10 @@ public class UserController {
 	 */
 	
 	@PostMapping("")
-	public ResponseEntity<RegisterResponseDto> saveUser(@Valid @RequestBody UserDto userDto)
+	public ResponseEntity<RegisterResponseDto> createAccount(@Valid @RequestBody UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
 		log.info("saveUser is used to save the user details");
-		RegisterResponseDto registerResponseDto = userService.saveUser(userDto);
+		RegisterResponseDto registerResponseDto = userService.createAccount(userDto);
 		if (registerResponseDto != null) {
 			return new ResponseEntity<>(registerResponseDto, HttpStatus.OK);
 		}

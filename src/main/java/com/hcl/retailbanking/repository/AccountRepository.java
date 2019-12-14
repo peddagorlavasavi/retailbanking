@@ -1,6 +1,8 @@
 package com.hcl.retailbanking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hcl.retailbanking.entity.Account;
@@ -19,6 +21,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	 * @return
 	 */
 	public Account findAccountNumberByUserId(Integer userId);
+
+	@Query("select a from Account a where a.userId=:userId and a.accountType=:accountType")
+	public Account getAccountByUserIdAndAccountType(@Param("userId") Integer userId,@Param("accountType") String accountType);
 
 
 }
