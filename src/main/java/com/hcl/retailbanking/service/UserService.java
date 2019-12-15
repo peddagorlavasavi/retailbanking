@@ -2,8 +2,6 @@ package com.hcl.retailbanking.service;
 
 import java.util.List;
 
-import com.hcl.retailbanking.dto.LoginRequestDto;
-import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.UserListResponseDto;
@@ -16,10 +14,6 @@ public interface UserService {
 	public RegisterResponseDto createAccount(UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException;
 
-
-	//LoginResponseDto loginUser(LoginRequestDto loginRequestDto);
-
-
-	List<UserListResponseDto> getAllUser(Integer userId);
+	List<UserListResponseDto> getAllUser(Integer userId) ;
 
 }
