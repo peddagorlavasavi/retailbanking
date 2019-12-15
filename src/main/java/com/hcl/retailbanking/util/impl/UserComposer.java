@@ -1,4 +1,4 @@
-package com.hcl.retailbanking.util.Impl;
+package com.hcl.retailbanking.util.impl;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,13 @@ import com.hcl.retailbanking.util.AccountComposer;
 import com.hcl.retailbanking.util.StringConstant;
 import com.hcl.retailbanking.util.Utils;
 
-@Component(value ="accountComposer")
+/**
+ * 
+ * @author Sujal
+ * @description account composer is used to compose the account information
+ *
+ */
+@Component(value = "accountComposer")
 public class UserComposer implements AccountComposer<UserDto, User> {
 
 	@Override

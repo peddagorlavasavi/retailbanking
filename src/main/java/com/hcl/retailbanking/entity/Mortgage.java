@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Mortgage {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer mortgageId;
@@ -34,6 +36,7 @@ public class Mortgage {
 	@Transient
 	private Integer customerId;
 
+	@JsonIgnore
 	@OneToOne
 	@JoinColumn(name = "account_number")
 	private Account account;

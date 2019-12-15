@@ -29,7 +29,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	 * @param toDate
 	 * @return
 	 */
-
 	@Query("SELECT t FROM Transaction t WHERE t.fromAccount=:accountNumber and t.transactionDate between :fromDate and :toDate")
 	List<Transaction> getTransactionsBetweenDates(LocalDate fromDate, LocalDate toDate, Long accountNumber);
 

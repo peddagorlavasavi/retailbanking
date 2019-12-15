@@ -22,21 +22,30 @@ public class AccountController {
 
 	@Autowired
 	private AccountService accountService;
-	
+
+	/**
+	 * @author Sujal
+	 * @description This API is used to create a mortgage account for a saving
+	 *              account by the admin
+	 * @param userId   is the admin id
+	 * @param mortgage details of customer
+	 * @return ResponseEntity<MortgageResponseDto>
+	 */
 	@PostMapping("/mortgage/{userId}")
-	public ResponseEntity<MortgageResponseDto> createMortgageAccount(@PathVariable("userId") Integer userId, @RequestBody Mortgage mortgage) {
+	public ResponseEntity<MortgageResponseDto> createMortgageAccount(@PathVariable("userId") Integer userId,
+			@RequestBody Mortgage mortgage) {
 		MortgageResponseDto mortgageResponseDto = new MortgageResponseDto();
-		
-		Account account =accountService.createMortgageAccount(userId, mortgage);
-		if(account!=null) {
+
+		Account account = accountService.createMortgageAccount(userId, mortgage);
+		if (account != null) {
 			mortgageResponseDto.setAccountNumber(account.getAccountNumber());
 			mortgageResponseDto.setMessage(ApiConstant.CREATE_SUCCESS);
 			return ResponseEntity.ok(mortgageResponseDto);
-		}else {
+		} else {
 			mortgageResponseDto.setMessage(ApiConstant.CREATE_FAILED);
 		}
-		
+
 		return ResponseEntity.ok(mortgageResponseDto);
-	
+
 	}
 }

@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
-import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.SearchResponseDto;
+import com.hcl.retailbanking.dto.UserDto;
+import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
 import com.hcl.retailbanking.exception.MobileNumberExistException;
 import com.hcl.retailbanking.exception.PasswordInvalidException;
@@ -19,5 +20,6 @@ public interface UserService {
 	
 	public List<SearchResponseDto> searchAccount(Integer userId, Long accountNumber);
 
+	List<UserListResponseDto> getAllUser(Integer userId);
 
 }

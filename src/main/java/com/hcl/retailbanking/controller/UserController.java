@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.LoginRequestDto;
+import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
+import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
 import com.hcl.retailbanking.exception.MobileNumberExistException;
 import com.hcl.retailbanking.exception.PasswordInvalidException;
 import com.hcl.retailbanking.service.UserService;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * UserController is the Controller class
@@ -37,11 +38,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
-@Slf4j
 public class UserController {
 
 	@Autowired
 	UserService userService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	/**
 	 * 
@@ -55,7 +57,8 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<RegisterResponseDto> createAccount(@Valid @RequestBody UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
-		log.info("saveUser is used to save the user details");
+
+		logger.info("saveUser is used to save the user details");
 		RegisterResponseDto registerResponseDto = userService.createAccount(userDto);
 		if (registerResponseDto != null) {
 			return new ResponseEntity<>(registerResponseDto, HttpStatus.OK);
@@ -71,7 +74,7 @@ public class UserController {
 	 */
 	@PostMapping("/user/login")
 	public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginRequestDto apiLoginRequestDto) {
-		log.info("loginUser is used to verify the user");
+		logger.info("loginUser is used to verify the user");
 		if (apiLoginRequestDto != null) {
 			LoginResponseDto apiLoginInfoDto = userService.loginUser(apiLoginRequestDto.getMobileNumber(),
 					apiLoginRequestDto.getPassword());
@@ -79,7 +82,23 @@ public class UserController {
 				return new ResponseEntity<>(apiLoginInfoDto, HttpStatus.OK);
 			}
 		}
-		return new ResponseEntity<>(HttpStatus.OK);
+		return  new ResponseEntity<>( HttpStatus.OK);
+}
+	
+	/**
+	 * @description -> getting all the customers
+	 * @param userId
+	 * @return List<UserListResponseDto>
+	 */
+	@GetMapping("/{userId}")
+	public ResponseEntity<List<UserListResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
+		logger.info("Listing all the users"+userId);
+		List<UserListResponseDto> userListResponseDto = userService.getAllUser(userId);
+		if (userListResponseDto != null) {
+			return new ResponseEntity<>(userListResponseDto, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
 	}
 
 	/**
@@ -91,12 +110,12 @@ public class UserController {
 	 * @param accountNumber
 	 * @return mortgage details and user details are fetched
 	 */
-	@GetMapping("{userId}")
+	@GetMapping("/accounts/{userId}")
 	public ResponseEntity<List<SearchResponseDto>> getAccountDetails(@PathVariable("userId") Integer userId,
 			@RequestParam Long accountNumber) {
 		List<SearchResponseDto> accountList = userService.searchAccount(userId, accountNumber);
 		if (accountList != null && !accountList.isEmpty()) {
-			log.info("got the list");
+			logger.info("got the list");
 			return new ResponseEntity<>(accountList, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

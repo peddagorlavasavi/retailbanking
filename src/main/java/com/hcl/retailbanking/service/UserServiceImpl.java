@@ -3,6 +3,8 @@ package com.hcl.retailbanking.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,6 +15,7 @@ import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
+import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Mortgage;
 import com.hcl.retailbanking.entity.User;
@@ -40,21 +43,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	AccountRepository accountRepository;
-	
+
 	@Autowired
 	MortgageRepository mortgageRepository;
-	
+
 	@Autowired
 	AccountService accountService;
 
 	@Qualifier(value = "accountComposer")
 	@Autowired
 	AccountComposer<UserDto, User> accountComposer;
+
+	@Autowired
+	MortgageRepository mortgagerepository;
 
 	/**
 	 * @description This is the method used to save the user details
@@ -97,12 +105,47 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * @description loginUser is the method used to login into user account
-	 * @param mobileNumber
-	 * @param password
-	 * @return
+	 * @description -> getAllUser is used to get all users
+	 * @param userId
 	 */
 	@Override
+	public List<UserListResponseDto> getAllUser(Integer userId) {
+		User user = userRepository.getAdmin(userId, StringConstant.ROLE);
+		logger.info("inside getAllUser " + user.getUserId());
+		List<UserListResponseDto> userListResponseDtoList = new ArrayList<>();
+		if (user != null) {
+			List<User> userList = userRepository.getByRole(StringConstant.CUSTOMER);
+
+			userList.forEach(users -> {
+				logger.info("inside getAllUser " + users.getUserId());
+
+				UserListResponseDto userListResponseDto = new UserListResponseDto();
+				Account account = accountRepository.findByUserId(users.getUserId());
+
+				if (account != null) {
+					logger.info("inside getAllUser " + account.getAccountNumber());
+
+					BeanUtils.copyProperties(users, userListResponseDto);
+					BeanUtils.copyProperties(account, userListResponseDto);
+
+					Mortgage mortgage = mortgagerepository.findByAccountNumber(account.getAccountNumber());
+					if (mortgage != null) {
+						// BeanUtils.copyProperties(mortgage, userListResponseDto);
+						userListResponseDto.setMortgage(mortgage);
+					}
+				}
+				userListResponseDtoList.add(userListResponseDto);
+			});
+		}
+		return userListResponseDtoList;
+	}
+
+	/**
+	 * @description loginUser method is for customer login
+	 * @param mobileNumber
+	 * @param password
+	 * @return LoginResponseDto
+	 */
 	public LoginResponseDto loginUser(String mobileNumber, String password) {
 		log.info("loginUser is used to verify the user");
 		User user = userRepository.getUserByMobileNumber(mobileNumber);

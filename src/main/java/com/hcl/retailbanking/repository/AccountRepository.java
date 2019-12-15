@@ -15,20 +15,37 @@ import com.hcl.retailbanking.entity.Account;
  */
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-	public Account findByUserId(Integer userId);
+	@Query("select a from Account a where a.userId=:userId")
+	public Account findByUserId(@Param("userId") Integer userId);
 
 	/**
 	 * @author Sri Keerthna By using userId find the account number
 	 * @param userId
-	 * @return
+	 * @return Account
 	 */
 	public Account findAccountNumberByUserId(Integer userId);
 
+	/**
+	 * @author Sujal
+	 * @description This method is used to fetch account based on userId and account
+	 *              type [savings or mortgage]
+	 * @param userId
+	 * @param accountType
+	 * @return Account
+	 */
 	@Query("select a from Account a where a.userId=:userId and a.accountType=:accountType")
-	public Account getAccountByUserIdAndAccountType(@Param("userId") Integer userId,@Param("accountType") String accountType);
+	public Account getAccountByUserIdAndAccountType(@Param("userId") Integer userId,
+			@Param("accountType") String accountType);
 
-
+	/**
+	 * @author Sujal
+	 * @description This method is used to fetch the list of account based on
+	 *              account number and account type [savings or mortgage]
+	 * @param accountNumber
+	 * @param accountType
+	 * @return List<Account> is list of account
+	 */
 	@Query("select c from Account c where CONCAT('',c.accountNumber) like %:accountNumber% and accountType =:accountType")
-	public List<Account> findByAccountNumber(@Param("accountNumber")  String accountNumber,String accountType);
+	public List<Account> findByAccountNumber(@Param("accountNumber") String accountNumber, String accountType);
 
 }

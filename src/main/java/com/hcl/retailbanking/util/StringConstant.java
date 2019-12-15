@@ -6,6 +6,8 @@ public class StringConstant {
 
 	public static final String DEBIT = "DEBIT";
 	public static final String CREDIT = "CREDIT";
+	public static final String ROLE = "admin";
+	public static final String CUSTOMER = "customer";
 	
     public static final String ACTIVE_STATUS = "ACTIVE";
 	public static final String DEACTIVE_STATUS = "DEACTIVE";
@@ -31,6 +33,7 @@ public class StringConstant {
 	
 	public static final String PASSWORD_VALIDATION_FAILED = "Please Enter the Password more than 7 characters";
 	public static final String AGE_VALIDATION_FAILED ="Age should be greater than 18";
+	
 	public static final String MOBILE_VALIDATION_FAILED = "Mobile Number already exists.Require new mobile number for registration.";
 	
 	public static final String ADMIN_ROLE = "ADMIN";

@@ -7,8 +7,8 @@ public class ApiConstant {
     public static final String FAILED = "Invalid account number";
     public static final String EMPTY = "No transaction available";
 
-    public static final String CREATE_SUCCESS = "CREATION SUCCESSFUL";
-    public static final String CREATE_FAILED = "CREATION FAILED";
+    public static final String CREATE_SUCCESS = "Mortgage account created successfully";
+    public static final String CREATE_FAILED = "Failed to create mortgage account ";
 
     public static final String DELETE_SUCCESS = "DELETE SUCCESSFUL";
     public static final String DELETE_FAILED = "DELETE FAILED";
