@@ -108,7 +108,7 @@ public class TransactionControllerTest {
 		account.setUserId(123445);
 		account.setAccountNumber(1223346L);
 		account.setBalance(3000D);
-		account.setAccountType(StringConstant.ACCOUNT_TYPE);
+		account.setAccountType(StringConstant.SAVINGS_ACCOUNT_TYPE);
 		account.setIfscCode("HCL98989");
 
 		Transaction transaction = new Transaction();
