@@ -1,24 +1,34 @@
 
 package com.hcl.retailbanking.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
+import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.entity.Account;
+import com.hcl.retailbanking.entity.Mortgage;
 import com.hcl.retailbanking.entity.User;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
 import com.hcl.retailbanking.exception.MobileNumberExistException;
 import com.hcl.retailbanking.exception.PasswordInvalidException;
+import com.hcl.retailbanking.repository.AccountRepository;
+import com.hcl.retailbanking.repository.MortgageRepository;
 import com.hcl.retailbanking.repository.UserRepository;
 import com.hcl.retailbanking.util.AccountComposer;
 import com.hcl.retailbanking.util.ApiConstant;
@@ -35,6 +45,12 @@ public class UserServiceTest {
 
 	@Mock
 	AccountService accountService;
+	@Mock
+	AccountRepository accountRepository;
+	
+	@Mock
+	MortgageRepository mortgagerepository;
+
 	
 	@Mock
 	AccountComposer<UserDto, User> accountComposer;
@@ -43,8 +59,43 @@ public class UserServiceTest {
 	User user = new User();
 	RegisterResponseDto registerResponseDto = new RegisterResponseDto();
 	LoginResponseDto apiLoginInfoDto = new LoginResponseDto();
-
+	
+	List<UserListResponseDto> userListResponseDtoList=new ArrayList<>();
+	UserListResponseDto userListResponseDto=new UserListResponseDto();
+	List<User> userList=new ArrayList<>();
+	Mortgage mortgage=new Mortgage();
+	User users = new User();
 	Account account = new Account();
+	
+	@Before
+	public void setUpd() {
+		user.setUserId(1);
+		user.setRole("admin");
+		users.setUserId(2);
+		users.setRole("customer");
+		userList.add(users);
+		account.setUserId(2);
+		account.setAccountNumber(123456L);
+		mortgage.setAccount(account);
+		BeanUtils.copyProperties(user, userListResponseDto);
+		BeanUtils.copyProperties(account, userListResponseDto);
+		userListResponseDto.setMortgage(mortgage);
+		userListResponseDtoList.add(userListResponseDto);
+	}
+	
+	
+	@Test
+	public void testGetAlluser()  {
+		Mockito.when(userRepository.getAdmin(1, StringConstant.ROLE)).thenReturn(user);
+		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
+		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
+		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage);
+		List<UserListResponseDto> userListResponseDtoLists=userServiceImpl.getAllUser(1);
+		assertEquals(1, userListResponseDtoLists.size());
+	}
+	
+
+	
 
 	@Test
 	public void testSaveUserPositive()

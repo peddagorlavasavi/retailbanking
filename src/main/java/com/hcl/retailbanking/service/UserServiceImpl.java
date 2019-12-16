@@ -107,9 +107,10 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @description -> getAllUser is used to get all users
 	 * @param userId
+	 * @throws InvalidAdminException 
 	 */
 	@Override
-	public List<UserListResponseDto> getAllUser(Integer userId) {
+	public List<UserListResponseDto> getAllUser(Integer userId)  {
 		User user = userRepository.getAdmin(userId, StringConstant.ROLE);
 		logger.info("inside getAllUser " + user.getUserId());
 		List<UserListResponseDto> userListResponseDtoList = new ArrayList<>();

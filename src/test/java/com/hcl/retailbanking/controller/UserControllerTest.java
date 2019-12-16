@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,6 +28,8 @@ import com.hcl.retailbanking.exception.PasswordInvalidException;
 import com.hcl.retailbanking.service.UserService;
 import com.hcl.retailbanking.util.ApiConstant;
 import com.hcl.retailbanking.util.StringConstant;
+import com.hcl.retailbanking.dto.UserListResponseDto;
+import com.hcl.retailbanking.entity.Mortgage;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UserControllerTest {
@@ -108,5 +114,38 @@ public class UserControllerTest {
 		Integer result = userController.createAccount(userDto).getStatusCodeValue();
 		assertEquals(406, result);
 	}
+	
+	
+	List<UserListResponseDto> userListResponseDtoList=new ArrayList<>();
+	UserListResponseDto userListResponseDto=new UserListResponseDto();
+	Mortgage mortgage=new Mortgage();
+	
+	@Before
+	public void setUp() {
+		userListResponseDto.setUserId(2);
+		mortgage.setEmi(12.0);
+		userListResponseDto.setMortgage(mortgage);
+		userListResponseDtoList.add(userListResponseDto);
+	}
+	
+	@Test
+	public void testGetAllUserPositive() {
+		Mockito.when(userService.getAllUser(1)).thenReturn(userListResponseDtoList);
+		Integer result = userController.getAllUser(1).getStatusCodeValue();
+		assertEquals(200, result);
+	}
+
+	
+	@Test
+	public void testGetAllUserNegative() {
+		List<UserListResponseDto> userListResponseDtoLists=null;
+		Mockito.when(userService.getAllUser(1)).thenReturn(userListResponseDtoLists);
+		Integer result = userController.getAllUser(1).getStatusCodeValue();
+		assertEquals(204, result);
+	}
+
+	
+	
+	
 
 }
