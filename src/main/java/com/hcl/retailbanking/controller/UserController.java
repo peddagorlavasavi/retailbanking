@@ -110,7 +110,7 @@ public class UserController {
 	 * @param accountNumber
 	 * @return mortgage details and user details are fetched
 	 */
-	@GetMapping("/accounts/{userId}")
+	@GetMapping("/{userId}/search")
 	public ResponseEntity<List<SearchResponseDto>> getAccountDetails(@PathVariable("userId") Integer userId,
 			@RequestParam Long accountNumber) {
 		List<SearchResponseDto> accountList = userService.searchAccount(userId, accountNumber);

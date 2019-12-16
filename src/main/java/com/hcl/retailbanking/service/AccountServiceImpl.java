@@ -14,6 +14,7 @@ import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Mortgage;
 import com.hcl.retailbanking.entity.Transaction;
 import com.hcl.retailbanking.entity.User;
+import com.hcl.retailbanking.exception.NotEligibleForMortgageException;
 import com.hcl.retailbanking.repository.AccountRepository;
 import com.hcl.retailbanking.repository.MortgageRepository;
 import com.hcl.retailbanking.repository.TransactionRepository;
@@ -110,6 +111,8 @@ public class AccountServiceImpl implements AccountService {
 				mortgage1 = createMortgage(mortgage, account);
 				if (mortgage1 != null)
 					creditAmount(mortgage1, account, user);
+			}else {
+				throw new NotEligibleForMortgageException();
 			}
 
 		}
