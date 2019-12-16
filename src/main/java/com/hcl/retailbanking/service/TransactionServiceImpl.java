@@ -41,7 +41,8 @@ public class TransactionServiceImpl implements TransactionService {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 	/**
-	 * The TransactionRepository methods are autowired with this TransactionServiceImpl..
+	 * The TransactionRepository methods are autowired with this
+	 * TransactionServiceImpl..
 	 */
 	@Autowired
 	TransactionRepository transactionRepository;
@@ -51,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
 	 */
 	@Autowired
 	AccountRepository accountRepository;
-	
+
 	/**
 	 * 
 	 * @description this method is used to do fund transfer in the application
@@ -63,11 +64,11 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) {
 		logger.info("Inside fundTransfer method");
-		Account account1=null, account2=null;
+		Account account1 = null, account2 = null;
 
 		Optional<Account> fromAccount = accountRepository.findById(fundTransferRequestDTO.getFromAccount());
 		Optional<Account> toAccount = accountRepository.findById(fundTransferRequestDTO.getToAccount());
-		
+
 		// checking source and destination accounts existed or not
 		if (!fromAccount.isPresent() || !toAccount.isPresent()) {
 			throw new CommonException(MessageCode.ACCOUNT_INVALID);
@@ -83,52 +84,65 @@ public class TransactionServiceImpl implements TransactionService {
 			throw new CommonException(MessageCode.insufficentFunds(fromAccount.get().getBalance()));
 		}
 
-		if(fromAccount.isPresent()) {
-			account1=fromAccount.get();
+		if (fromAccount.isPresent()) {
+			account1 = fromAccount.get();
 			account1.setBalance(fromAccount.get().getBalance() - fundTransferRequestDTO.getAmount());
 		}
-		if(toAccount.isPresent()) {
-			account2=toAccount.get();
+		if (toAccount.isPresent()) {
+			account2 = toAccount.get();
 			account2.setBalance(toAccount.get().getBalance() + fundTransferRequestDTO.getAmount());
 		}
-		
-		Transaction transaction= debit(fundTransferRequestDTO, account1);
-		if(transaction!=null)
+
+		Transaction transaction = debit(fundTransferRequestDTO, account1);
+		if (transaction != null)
 			credit(fundTransferRequestDTO, account2);
-		
+
 		return new FundTransferResponseDto("Successfully Transferred", fundTransferRequestDTO.getFromAccount(),
 				fundTransferRequestDTO.getToAccount(), fundTransferRequestDTO.getAmount());
 	}
-	
+
+	/**
+	 * @author Sujal
+	 * @description This method is used to debit money in an account
+	 * @param fundTransferRequestDTO
+	 * @param account                in which the amount will be debited
+	 * @return transaction object
+	 */
 	@Transactional
 	private synchronized Transaction debit(FundTransferRequestDto fundTransferRequestDTO, Account account) {
-		
+
 		Transaction transaction1 = getTransactionObject(fundTransferRequestDTO, StringConstant.DEBIT);
 
-		transaction1=transactionRepository.save(transaction1);
-		if(transaction1!=null)
+		transaction1 = transactionRepository.save(transaction1);
+		if (transaction1 != null)
 			accountRepository.save(account);
-		
+
 		return transaction1;
 	}
-	
+
+	/**
+	 * @author Sujal
+	 * @description This method is used to credit money in an account
+	 * @param fundTransferRequestDTO
+	 * @param account                in which the amount will be created
+	 * @return transaction object
+	 */
 	@Transactional
 	private synchronized Transaction credit(FundTransferRequestDto fundTransferRequestDTO, Account account) {
-		
+
 		Long fromAccountNumber = fundTransferRequestDTO.getFromAccount();
 		Long toAccountNumber = fundTransferRequestDTO.getToAccount();
-		
+
 		fundTransferRequestDTO.setFromAccount(toAccountNumber);
 		fundTransferRequestDTO.setToAccount(fromAccountNumber);
-		
+
 		Transaction transaction2 = getTransactionObject(fundTransferRequestDTO, StringConstant.CREDIT);
-		transaction2=transactionRepository.save(transaction2);
-		if(transaction2!=null)
+		transaction2 = transactionRepository.save(transaction2);
+		if (transaction2 != null)
 			accountRepository.save(account);
 
 		return transaction2;
 	}
-	
 
 	/**
 	 * @description Creating transaction object with fundTransferRequestDTO
@@ -148,8 +162,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	/**
-	 * @description validation to create account
-	 * check the balance in from account
+	 * @description validation to create account check the balance in from account
 	 * 
 	 * @param account
 	 * @param fundTransferRequestDTO
@@ -164,6 +177,7 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	/**
+	 * @author Sujal
 	 * @description this method is used to do view account Summary in the
 	 *              application accountSummary() method will have account details
 	 *              and last five transaction
@@ -172,8 +186,9 @@ public class TransactionServiceImpl implements TransactionService {
 	 */
 	public AccountSummaryDto accountSummary(Integer userId) {
 		AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
-		//Account account = accountRepository.findByUserId(userId);
-		Account account = accountRepository.getAccountByUserIdAndAccountType(userId, StringConstant.SAVINGS_ACCOUNT_TYPE);
+		// Account account = accountRepository.findByUserId(userId);
+		Account account = accountRepository.getAccountByUserIdAndAccountType(userId,
+				StringConstant.SAVINGS_ACCOUNT_TYPE);
 
 		if (account != null) {
 			accountSummaryDto.setAccount(account);
@@ -191,7 +206,7 @@ public class TransactionServiceImpl implements TransactionService {
 		}
 		return accountSummaryDto;
 	}
-	
+
 	/**
 	 * @author Sri Keerthna In this method input is taken from user and using their
 	 *         account number monthly transactions will be displayed.

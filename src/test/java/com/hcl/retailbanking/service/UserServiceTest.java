@@ -24,9 +24,13 @@ import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Mortgage;
 import com.hcl.retailbanking.entity.User;
+import com.hcl.retailbanking.exception.AgeNotMatchedException;
+import com.hcl.retailbanking.exception.MobileNumberExistException;
+import com.hcl.retailbanking.exception.PasswordInvalidException;
 import com.hcl.retailbanking.repository.AccountRepository;
 import com.hcl.retailbanking.repository.MortgageRepository;
 import com.hcl.retailbanking.repository.UserRepository;
+import com.hcl.retailbanking.util.AccountComposer;
 import com.hcl.retailbanking.util.ApiConstant;
 import com.hcl.retailbanking.util.StringConstant;
 
@@ -47,18 +51,21 @@ public class UserServiceTest {
 	@Mock
 	MortgageRepository mortgagerepository;
 
+	
+	@Mock
+	AccountComposer<UserDto, User> accountComposer;
 
 	UserDto userDto = new UserDto();
 	User user = new User();
 	RegisterResponseDto registerResponseDto = new RegisterResponseDto();
 	LoginResponseDto apiLoginInfoDto = new LoginResponseDto();
-	Account account = new Account();
 	
 	List<UserListResponseDto> userListResponseDtoList=new ArrayList<>();
 	UserListResponseDto userListResponseDto=new UserListResponseDto();
 	List<User> userList=new ArrayList<>();
 	Mortgage mortgage=new Mortgage();
 	User users = new User();
+	Account account = new Account();
 	
 	@Before
 	public void setUpd() {
@@ -87,41 +94,45 @@ public class UserServiceTest {
 		assertEquals(1, userListResponseDtoLists.size());
 	}
 	
-	/*
-	 * @Test public void testGetAlluserNegative() {
-	 * Mockito.when(userRepository.getAdmin(1,
-	 * StringConstant.ROLE)).thenReturn(null); List<UserListResponseDto>
-	 * userListResponseDtoLists=userServiceImpl.getAllUser(null); assertEquals(1,
-	 * userListResponseDtoLists.size()); }
-	 */
-	/*
-	 * @Test public void testSaveUserPositive() throws PasswordInvalidException,
-	 * AgeNotMatchedException, MobileNumberExistException {
-	 * userDto.setFirstName("Hema"); userDto.setLastName("Jayakumar");
-	 * userDto.setDob(LocalDate.of(1998, 8, 25));
-	 * userDto.setMobileNumber("9894803626"); userDto.setEmail("hema@gmail.com");
-	 * userDto.setTypeOfId("Aadhar"); userDto.setIdProofNumber("IND467");
-	 * userDto.setAge(21); userDto.setAddress("Chennai");
-	 * userDto.setPassword("hemanive"); userDto.setGender("Female");
-	 * 
-	 * account.setUserId(1223); account.setAccountNumber(100100L);
-	 * account.setAccountType(StringConstant.ACCOUNT_TYPE);
-	 * account.setIfscCode(StringConstant.IFSC_CODE); account.setBalance(10000.0);
-	 * 
-	 * registerResponseDto.setMessage(StringConstant.REGISTRATION_STATUS);
-	 * registerResponseDto.setAccountNumber(account.getAccountNumber());
-	 * registerResponseDto.setBalance(10000.0);
-	 * 
-	 * user.setUserId(1223);
-	 * 
-	 * when(userRepository.save(user)).thenReturn(user);
-	 * when(accountService.generateAccount(user.getUserId())).thenReturn(account);
-	 * 
-	 * RegisterResponseDto registerResponseDto = userServiceImpl.saveUser(userDto);
-	 * Assert.assertNotNull(registerResponseDto);
-	 * 
-	 * }
-	 */
+
+	
+
+	@Test
+	public void testSaveUserPositive()
+			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
+		userDto.setFirstName("Hema");
+		userDto.setLastName("Jayakumar");
+		userDto.setDob(LocalDate.of(1998, 8, 25));
+		userDto.setMobileNumber("9894803626");
+		userDto.setEmail("hema@gmail.com");
+		userDto.setTypeOfId("Aadhar");
+		userDto.setIdProofNumber("IND467");
+		userDto.setAge(21);
+		userDto.setAddress("Chennai");
+		userDto.setPassword("hemanive");
+		userDto.setGender("Female");
+		userDto.setSalary(2000D);
+
+		account.setUserId(1223);
+		account.setAccountNumber(100100L);
+		account.setAccountType(StringConstant.SAVINGS_ACCOUNT_TYPE);
+		account.setIfscCode(StringConstant.IFSC_CODE);
+		account.setBalance(10000.0);
+
+		registerResponseDto.setMessage(StringConstant.REGISTRATION_STATUS);
+		registerResponseDto.setAccountNumber(account.getAccountNumber());
+		registerResponseDto.setBalance(10000.0);
+
+		//user=accountComposer.compose(userDto);
+		user.setUserId(1223);
+		
+		Mockito.when(userRepository.save(user)).thenReturn(user);
+		Mockito.when(accountService.generateAccount(user.getUserId(),StringConstant.SAVINGS_ACCOUNT_TYPE)).thenReturn(account);
+
+		//RegisterResponseDto registerResponseDto = userServiceImpl.createAccount(userDto);
+		//Assert.assertNotNull(registerResponseDto);
+
+	}
 
 	@Test
 	public void testLoginUserPositive() {

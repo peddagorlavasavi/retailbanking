@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
 	/**
 	 * getAccountDetails()
 	 * 
-	 * @description getAccountDetails() meth
+	 * @description getAccountDetails() method used for getting account details
 	 */
 	@Override
 	public Account getAccountDetails(Integer userId) {
@@ -84,6 +84,14 @@ public class AccountServiceImpl implements AccountService {
 		return accountRepository.getAccountByUserIdAndAccountType(userId, StringConstant.SAVINGS_ACCOUNT_TYPE);
 	}
 
+	/**
+	 * @author Sujal
+	 * @description This method is used to create a mortgage account for a saving
+	 *              account
+	 * @param userId   of admin
+	 * @param mortgage details
+	 * @return account info of the created mortgage account
+	 */
 	@Override
 	public Account createMortgageAccount(Integer userId, Mortgage mortgage) {
 		Account account = null;
@@ -109,6 +117,13 @@ public class AccountServiceImpl implements AccountService {
 		return account;
 	}
 
+	/**
+	 * @author Sujal
+	 * @description This method is used to save the mortgage information
+	 * @param mortgage
+	 * @param account
+	 * @return mortgage details
+	 */
 	@Transactional
 	private Mortgage createMortgage(Mortgage mortgage, Account account) {
 
@@ -117,9 +132,18 @@ public class AccountServiceImpl implements AccountService {
 		return mortgageRepository.save(mortgage);
 	}
 
+	/**
+	 * @author Sujal
+	 * @description This method is used to perform credit the mortgage amount in the
+	 *              customer's saving account
+	 * @param mortgage is the mortgage information
+	 * @param account  will be created for the saving account
+	 * @param user     is the admin who perform this operation
+	 * @return transaction for the mortgage amount
+	 */
 	@Transactional
 	private synchronized Transaction creditAmount(Mortgage mortgage, Account account, User user) {
-		Transaction transaction2 =null;
+		Transaction transaction2 = null;
 		Account account1 = accountRepository.getAccountByUserIdAndAccountType(user.getUserId(),
 				StringConstant.SAVINGS_ACCOUNT_TYPE);
 		if (account1 != null) {

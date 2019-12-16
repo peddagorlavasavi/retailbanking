@@ -15,9 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcl.retailbanking.dto.LoginRequestDto;
+import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
+import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
@@ -49,7 +53,7 @@ public class UserController {
 	 * @throws AgeNotMatchedException
 	 * @throws MobileNumberExistException
 	 */
-	
+
 	@PostMapping("")
 	public ResponseEntity<RegisterResponseDto> createAccount(@Valid @RequestBody UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
@@ -68,14 +72,18 @@ public class UserController {
 	 * @param password
 	 * @return
 	 */
-	/*
-	 * @PostMapping("/user/login") public ResponseEntity<LoginResponseDto>
-	 * userLogin(@RequestBody LoginRequestDto loginRequestDto) {
-	 * logger.info("Verifying the user"); LoginResponseDto loginResponseDto =
-	 * userService.loginUser(loginRequestDto); if (loginResponseDto != null) {
-	 * return new ResponseEntity<>(loginResponseDto, HttpStatus.OK); } else { return
-	 * new ResponseEntity<>(HttpStatus.NO_CONTENT); } }
-	 */
+	@PostMapping("/user/login")
+	public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginRequestDto apiLoginRequestDto) {
+		logger.info("loginUser is used to verify the user");
+		if (apiLoginRequestDto != null) {
+			LoginResponseDto apiLoginInfoDto = userService.loginUser(apiLoginRequestDto.getMobileNumber(),
+					apiLoginRequestDto.getPassword());
+			if (apiLoginInfoDto != null) {
+				return new ResponseEntity<>(apiLoginInfoDto, HttpStatus.OK);
+			}
+		}
+		return  new ResponseEntity<>( HttpStatus.OK);
+}
 	
 	/**
 	 * @description -> getting all the customers
@@ -84,7 +92,7 @@ public class UserController {
 	 */
 	@GetMapping("/{userId}")
 	public ResponseEntity<List<UserListResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
-		logger.info("Listing all the users");
+		logger.info("Listing all the users"+userId);
 		List<UserListResponseDto> userListResponseDto = userService.getAllUser(userId);
 		if (userListResponseDto != null) {
 			return new ResponseEntity<>(userListResponseDto, HttpStatus.OK);
@@ -93,5 +101,25 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * @author Sri Keerthna. @since 2019-12-14.
+	 * @description using userId and partial account number as input it will fetch
+	 *              the user details and mortgage details for that particular
+	 *              account.
+	 * @param userId
+	 * @param accountNumber
+	 * @return mortgage details and user details are fetched
+	 */
+	@GetMapping("/accounts/{userId}")
+	public ResponseEntity<List<SearchResponseDto>> getAccountDetails(@PathVariable("userId") Integer userId,
+			@RequestParam Long accountNumber) {
+		List<SearchResponseDto> accountList = userService.searchAccount(userId, accountNumber);
+		if (accountList != null && !accountList.isEmpty()) {
+			logger.info("got the list");
+			return new ResponseEntity<>(accountList, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+	}
 
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
+import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.entity.Account;
@@ -48,14 +49,17 @@ public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 
 	@Autowired
-	AccountService accountService;
-	
-	@Qualifier(value="accountComposer")
-	@Autowired
-	AccountComposer<UserDto, User> accountComposer;
+	AccountRepository accountRepository;
 
 	@Autowired
-	AccountRepository accountRepository;
+	MortgageRepository mortgageRepository;
+
+	@Autowired
+	AccountService accountService;
+
+	@Qualifier(value = "accountComposer")
+	@Autowired
+	AccountComposer<UserDto, User> accountComposer;
 
 	@Autowired
 	MortgageRepository mortgagerepository;
@@ -80,9 +84,9 @@ public class UserServiceImpl implements UserService {
 
 		if (userDetails == null) {
 			if (Utils.calculateAge(userDto.getDob()) >= StringConstant.MIN_AGE) {
-				
+
 				if (userDto.getPassword().length() >= StringConstant.PASSWORD_LENGTH) {
-					User user=accountComposer.compose(userDto);
+					User user = accountComposer.compose(userDto);
 					userRepository.save(user);
 					account = accountService.generateAccount(user.getUserId(), StringConstant.SAVINGS_ACCOUNT_TYPE);
 					registerResponseDto.setMessage(StringConstant.REGISTRATION_STATUS);
@@ -99,7 +103,6 @@ public class UserServiceImpl implements UserService {
 			throw new MobileNumberExistException(StringConstant.MOBILE_VALIDATION_FAILED);
 		}
 	}
-
 
 	/**
 	 * @description -> getAllUser is used to get all users
@@ -121,14 +124,14 @@ public class UserServiceImpl implements UserService {
 				Account account = accountRepository.findByUserId(users.getUserId());
 
 				if (account != null) {
-					logger.info("inside getAllUser "+account.getAccountNumber());
+					logger.info("inside getAllUser " + account.getAccountNumber());
 
 					BeanUtils.copyProperties(users, userListResponseDto);
 					BeanUtils.copyProperties(account, userListResponseDto);
 
 					Mortgage mortgage = mortgagerepository.findByAccountNumber(account.getAccountNumber());
 					if (mortgage != null) {
-						//BeanUtils.copyProperties(mortgage, userListResponseDto);
+						// BeanUtils.copyProperties(mortgage, userListResponseDto);
 						userListResponseDto.setMortgage(mortgage);
 					}
 				}
@@ -137,7 +140,13 @@ public class UserServiceImpl implements UserService {
 		}
 		return userListResponseDtoList;
 	}
-	
+
+	/**
+	 * @description loginUser method is for customer login
+	 * @param mobileNumber
+	 * @param password
+	 * @return LoginResponseDto
+	 */
 	public LoginResponseDto loginUser(String mobileNumber, String password) {
 		log.info("loginUser is used to verify the user");
 		User user = userRepository.getUserByMobileNumber(mobileNumber);
@@ -158,6 +167,35 @@ public class UserServiceImpl implements UserService {
 		}
 		return apiLoginInfoDto;
 	}
-		
+
+	/**
+	 * @author Sri Keerthna. @since 2019-12-14.
+	 * @description using userId and partial account number as input it will fetch
+	 *              the user details and mortgage details for that particular
+	 *              account.
+	 * @param userId
+	 * @param accountNumber
+	 * @return mortgage details and user details are fetched
+	 */
+	@Override
+	public List<SearchResponseDto> searchAccount(Integer userId, Long accountNumber) {
+		User user = userRepository.findUserByRole(userId, StringConstant.ADMIN_ROLE);
+		List<SearchResponseDto> list = new ArrayList<>();
+		if (user != null) {
+			List<Account> availableList = accountRepository.findByAccountNumber("" + accountNumber,
+					StringConstant.SAVINGS_ACCOUNT_TYPE);
+			log.info("got the account lists");
+			availableList.forEach(account -> {
+				SearchResponseDto searchResponseDto = new SearchResponseDto();
+				User users = userRepository.findUserByUserId(account.getUserId());
+				BeanUtils.copyProperties(users, searchResponseDto);
+				Mortgage mortgage = mortgageRepository.findByAccountNumber(account.getAccountNumber());
+				if (mortgage != null)
+					searchResponseDto.setMortgage(mortgage);
+				list.add(searchResponseDto);
+			});
+		}
+		return list;
+	}
 
 }
