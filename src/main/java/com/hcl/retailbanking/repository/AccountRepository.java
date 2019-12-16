@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.hcl.retailbanking.entity.Account;
+import com.hcl.retailbanking.util.StringConstant;
 
 /**
  * @author Vasavi
@@ -45,7 +46,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	 * @param accountType
 	 * @return List<Account> is list of account
 	 */
-	@Query("select c from Account c where CONCAT('',c.accountNumber) like %:accountNumber% and accountType =:accountType")
-	public List<Account> findByAccountNumber(@Param("accountNumber") String accountNumber, String accountType);
+	@Query("select c from Account c where c.userId not in (select a.userId from Account a where a.accountType='"+StringConstant.MORTGAGE_ACCOUNT_TYPE+"') and CONCAT('',c.accountNumber) like %:accountNumber% and accountType =:accountType")
+	public List<Account> findByAccountNumber(@Param("accountNumber") String accountNumber, @Param("accountType") String accountType);
 
 }
