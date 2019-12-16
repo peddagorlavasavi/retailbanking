@@ -35,6 +35,7 @@ import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.dto.TransactionDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 import com.hcl.retailbanking.service.TransactionService;
 import com.hcl.retailbanking.util.StringConstant;
 
@@ -70,7 +71,7 @@ public class TransactionControllerTest {
 	}
 
 	@Test
-	public void testFundTransfer() {
+	public void testFundTransfer() throws CommonException {
 		logger.info("Inside the fundTransferTest method");
 		FundTransferRequestDto fundTransferRequestDto = new FundTransferRequestDto();
 		fundTransferRequestDto.setFromAccount(1234567810L);

@@ -1,5 +1,6 @@
 package com.hcl.retailbanking.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
@@ -22,8 +23,10 @@ import lombok.Setter;
 @Table(name = "user")
 @Getter
 @Setter
-public class User {
+public class User implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer userId;

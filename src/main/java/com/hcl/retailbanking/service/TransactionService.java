@@ -7,6 +7,7 @@ import com.hcl.retailbanking.dto.FundTransferRequestDto;
 import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.dto.TransactionDto;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 
 /**
  * The interface TransactionService.
@@ -22,8 +23,9 @@ public interface TransactionService {
 	 *                               fromAccount,toAccount,amount,transactionType
 	 *                               and benefactorName.
 	 * @return fundTransferResponseDto
+	 * @throws CommonException 
 	 */
-	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO);
+	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) throws CommonException;
 
 	public AccountSummaryDto accountSummary(Integer userId);
 

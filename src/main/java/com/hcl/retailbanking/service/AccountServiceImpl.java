@@ -109,9 +109,8 @@ public class AccountServiceImpl implements AccountService {
 				account.setAccountType(StringConstant.MORTGAGE_ACCOUNT_TYPE);
 				account = generateAccount(customer.getUserId(), StringConstant.MORTGAGE_ACCOUNT_TYPE);
 				mortgage1 = createMortgage(mortgage, account);
-				if (mortgage1 != null)
-					creditAmount(mortgage1, account, user);
-			}else {
+				creditAmount(mortgage1, account, user);
+			} else {
 				throw new NotEligibleForMortgageException();
 			}
 

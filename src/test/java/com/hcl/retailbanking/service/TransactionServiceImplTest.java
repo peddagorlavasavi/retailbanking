@@ -23,6 +23,7 @@ import com.hcl.retailbanking.dto.FundTransferRequestDto;
 import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 import com.hcl.retailbanking.repository.AccountRepository;
 import com.hcl.retailbanking.repository.TransactionRepository;
 import com.hcl.retailbanking.util.Utils;
@@ -145,7 +146,7 @@ public class TransactionServiceImplTest {
 	}
 
 	@Test
-	public void testFundTransfer() {
+	public void testFundTransfer() throws CommonException {
 		logger.info("Inside the fundTransferTest method ");
 		Mockito.when(accountRepository.findById(fundTransferRequestDto.getFromAccount()))
 				.thenReturn(Optional.of(account));
@@ -157,7 +158,7 @@ public class TransactionServiceImplTest {
 
 	// checking for zero amount fund transfer test case
 	@Test
-	public void testFundTransferNegative() {
+	public void testFundTransferNegative() throws CommonException {
 		logger.info("Inside the fundTransferNegativeTest method ");
 		Mockito.when(accountRepository.findById(fundTransferRequestDto.getFromAccount()))
 				.thenReturn(Optional.of(account));
@@ -174,7 +175,8 @@ public class TransactionServiceImplTest {
 	@Test
 	public void testGetSummaryForPositive() {
 		Mockito.when(accountRepository.findByUserId(account.getUserId())).thenReturn(account);
-		List<Transaction> transactionList =  transactionRespository.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
+		List<Transaction> transactionList = transactionRespository
+				.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
 		Mockito.when(transactionList).thenReturn(getMockData());
 		assertNotNull(transactionList);
 		transactionList.forEach(transaction -> {
@@ -199,8 +201,7 @@ public class TransactionServiceImplTest {
 	public void testGetSummaryForNegative() {
 		Integer userId = null;
 		Mockito.when(accountRepository.findByUserId(userId)).thenReturn(null);
-		List<Transaction> transactionList = transactionRespository
-				.findTop5ByFromAccountOrderByTransactionIdDesc(000L);
+		List<Transaction> transactionList = transactionRespository.findTop5ByFromAccountOrderByTransactionIdDesc(000L);
 		Mockito.when(transactionList).thenReturn(Collections.emptyList());
 		assertThat(transactionList).hasSize(0);
 	}

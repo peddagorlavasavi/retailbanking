@@ -119,7 +119,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
 	public ResponseEntity<ErrorResponse> commonException(CommonException e) {
-		return ResponseEntity.badRequest().body(new ErrorResponse(e.exception.getCode(), e.exception.getMessage()));
+		return ResponseEntity.badRequest().body(new ErrorResponse(e.getException().getCode(), e.getException().getMessage()));
 
 	}
 

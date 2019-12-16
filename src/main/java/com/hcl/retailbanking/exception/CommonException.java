@@ -1,13 +1,12 @@
 package com.hcl.retailbanking.exception;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.Transient;
 
-@Setter
-@Getter
-public class CommonException extends RuntimeException {
+public class CommonException extends Exception {
 	private static final long serialVersionUID = 1L;
-	MessageCode exception;
+	
+	@Transient
+	private  MessageCode exception;
 
 	public CommonException() {
 		exception = MessageCode.RECORD_NOT_FOUND;

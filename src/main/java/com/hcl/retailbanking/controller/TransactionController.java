@@ -21,6 +21,7 @@ import com.hcl.retailbanking.dto.FundTransferRequestDto;
 import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.dto.TransactionDto;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 import com.hcl.retailbanking.service.TransactionService;
 
 /**
@@ -49,10 +50,11 @@ public class TransactionController {
 	 *                               fromAccount,toAccount,amount,transactionType
 	 *                               and benefactorName
 	 * @return fundTransferResponseDto
+	 * @throws CommonException
 	 */
 	@PostMapping("/fundTransfer")
 	public ResponseEntity<FundTransferResponseDto> fundTransfer(
-			@RequestBody FundTransferRequestDto fundTransferRequestDto) {
+			@RequestBody FundTransferRequestDto fundTransferRequestDto) throws CommonException {
 		logger.debug("In TransactionController:fundTransfer");
 		FundTransferResponseDto fundTransferResponseDto = transactionService.fundTransfer(fundTransferRequestDto);
 		return new ResponseEntity<>(fundTransferResponseDto, HttpStatus.OK);

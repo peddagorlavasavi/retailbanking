@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.LoginRequestDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
+import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.User;
@@ -46,6 +47,7 @@ public class UserControllerTest {
 	Account account = new Account();
 	LoginRequestDto apiLoginRequestDto = new LoginRequestDto();
 	LoginResponseDto apiLoginInfoDto = new LoginResponseDto();
+	List<SearchResponseDto> searchResponseDtoList = new ArrayList<>();
 
 	@Test
 	public void testLoginUserPositive() {
@@ -114,12 +116,11 @@ public class UserControllerTest {
 		Integer result = userController.createAccount(userDto).getStatusCodeValue();
 		assertEquals(406, result);
 	}
-	
-	
-	List<UserListResponseDto> userListResponseDtoList=new ArrayList<>();
-	UserListResponseDto userListResponseDto=new UserListResponseDto();
-	Mortgage mortgage=new Mortgage();
-	
+
+	List<UserListResponseDto> userListResponseDtoList = new ArrayList<>();
+	UserListResponseDto userListResponseDto = new UserListResponseDto();
+	Mortgage mortgage = new Mortgage();
+
 	@Before
 	public void setUp() {
 		userListResponseDto.setUserId(2);
@@ -127,7 +128,7 @@ public class UserControllerTest {
 		userListResponseDto.setMortgage(mortgage);
 		userListResponseDtoList.add(userListResponseDto);
 	}
-	
+
 	@Test
 	public void testGetAllUserPositive() {
 		Mockito.when(userService.getAllUser(1)).thenReturn(userListResponseDtoList);
@@ -135,17 +136,44 @@ public class UserControllerTest {
 		assertEquals(200, result);
 	}
 
-	
 	@Test
 	public void testGetAllUserNegative() {
-		List<UserListResponseDto> userListResponseDtoLists=null;
+		List<UserListResponseDto> userListResponseDtoLists = null;
 		Mockito.when(userService.getAllUser(1)).thenReturn(userListResponseDtoLists);
 		Integer result = userController.getAllUser(1).getStatusCodeValue();
 		assertEquals(204, result);
 	}
 
-	
-	
-	
+	@Test
+	public void searchAccountPositiveTest() {
+		user.setUserId(1);
+		account.setAccountNumber(12345678L);
+		SearchResponseDto searchResponseDto = new SearchResponseDto();
+		searchResponseDto.setUserId(1);
+		searchResponseDto.setMortgage(mortgage);
+		searchResponseDtoList.add(searchResponseDto);
+		Mockito.when(userService.searchAccount(1, 12345678L)).thenReturn(searchResponseDtoList);
+		Integer result = userController.getAccountDetails(1, 12345678L).getStatusCodeValue();
+		assertEquals(200, result);
+	}
+
+	@Test
+	public void searchAccountNegativeTest() {
+		user.setUserId(1);
+		account.setAccountNumber(12345678L);
+		Mockito.when(userService.searchAccount(1, 12345678L)).thenReturn(searchResponseDtoList);
+		Integer result = userController.getAccountDetails(1, 12345678L).getStatusCodeValue();
+		assertEquals(204, result);
+	}
+
+	@Test
+	public void searchAccountNegativeNullTest() {
+		user.setUserId(1);
+		account.setAccountNumber(12345678L);
+		List<SearchResponseDto> nullResponseDtoList = null;
+		Mockito.when(userService.searchAccount(1, 12345678L)).thenReturn(nullResponseDtoList);
+		Integer result = userController.getAccountDetails(1, 12345678L).getStatusCodeValue();
+		assertEquals(204, result);
+	}
 
 }

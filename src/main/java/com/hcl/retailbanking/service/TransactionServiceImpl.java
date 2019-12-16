@@ -31,6 +31,8 @@ import com.hcl.retailbanking.util.Utils;
  * The class TransactionServiceImpl.
  * 
  * @author Vasavi
+ * @description -> this class is used to do fund transfer between fromAccount to
+ *              toAccount and with savings account and mortgage account
  *
  */
 @Service
@@ -60,12 +62,13 @@ public class TransactionServiceImpl implements TransactionService {
 	 *                               fromAccount,toAccount,amount,transactionType
 	 *                               and benefactorName
 	 * @return fundTransferResponseDto
+	 * @throws CommonException
 	 */
 	@Override
-	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) {
+	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) throws CommonException {
 		logger.info("Inside fundTransfer method");
-		Account account1 = null, 
-				account2 = null;
+		Account account1 = null;
+		Account account2 = null;
 
 		Optional<Account> fromAccount = accountRepository.findById(fundTransferRequestDTO.getFromAccount());
 		Optional<Account> toAccount = accountRepository.findById(fundTransferRequestDTO.getToAccount());
@@ -94,9 +97,8 @@ public class TransactionServiceImpl implements TransactionService {
 			account2.setBalance(toAccount.get().getBalance() + fundTransferRequestDTO.getAmount());
 		}
 
-		Transaction transaction = debit(fundTransferRequestDTO, account1);
-		if (transaction != null)
-			credit(fundTransferRequestDTO, account2);
+		debit(fundTransferRequestDTO, account1);
+		credit(fundTransferRequestDTO, account2);
 
 		return new FundTransferResponseDto("Successfully Transferred", fundTransferRequestDTO.getFromAccount(),
 				fundTransferRequestDTO.getToAccount(), fundTransferRequestDTO.getAmount());
@@ -115,8 +117,7 @@ public class TransactionServiceImpl implements TransactionService {
 		Transaction transaction1 = getTransactionObject(fundTransferRequestDTO, StringConstant.DEBIT);
 
 		transaction1 = transactionRepository.save(transaction1);
-		if (transaction1 != null)
-			accountRepository.save(account);
+		accountRepository.save(account);
 
 		return transaction1;
 	}
@@ -139,8 +140,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 		Transaction transaction2 = getTransactionObject(fundTransferRequestDTO, StringConstant.CREDIT);
 		transaction2 = transactionRepository.save(transaction2);
-		if (transaction2 != null)
-			accountRepository.save(account);
+		accountRepository.save(account);
 
 		return transaction2;
 	}
@@ -172,8 +172,9 @@ public class TransactionServiceImpl implements TransactionService {
 	private boolean fromAccountBalanceVerification(Account account, FundTransferRequestDto fundTransferRequestDTO) {
 		if ((account.getBalance() - fundTransferRequestDTO.getAmount()) < 1000) {
 			return false;
+		} else {
+			return true;
 		}
-		return true;
 
 	}
 
@@ -187,7 +188,6 @@ public class TransactionServiceImpl implements TransactionService {
 	 */
 	public AccountSummaryDto accountSummary(Integer userId) {
 		AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
-		// Account account = accountRepository.findByUserId(userId);
 		Account account = accountRepository.getAccountByUserIdAndAccountType(userId,
 				StringConstant.SAVINGS_ACCOUNT_TYPE);
 

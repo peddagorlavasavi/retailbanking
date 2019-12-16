@@ -39,6 +39,7 @@ public class AccountValidatorImpl implements AccountValidator<Mortgage> {
 		if (((salary / 2) - (salary / 10)) >= mortgage.getEmi())
 			return true;
 		return false;
+
 	}
 
 }
