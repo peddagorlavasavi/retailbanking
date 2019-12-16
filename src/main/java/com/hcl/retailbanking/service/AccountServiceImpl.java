@@ -80,7 +80,6 @@ public class AccountServiceImpl implements AccountService {
 	 */
 	@Override
 	public Account getAccountDetails(Integer userId) {
-		// TODO Auto-generated method stub
 		return accountRepository.getAccountByUserIdAndAccountType(userId, StringConstant.SAVINGS_ACCOUNT_TYPE);
 	}
 

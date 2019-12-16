@@ -92,7 +92,7 @@ public class UserController {
 	 */
 	@GetMapping("/{userId}")
 	public ResponseEntity<List<UserListResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
-		logger.info("Listing all the users"+userId);
+		logger.info("Listing all the users");
 		List<UserListResponseDto> userListResponseDto = userService.getAllUser(userId);
 		if (userListResponseDto != null) {
 			return new ResponseEntity<>(userListResponseDto, HttpStatus.OK);

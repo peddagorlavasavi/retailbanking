@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
 		if (userDetails == null) {
 			if (Utils.calculateAge(userDto.getDob()) >= StringConstant.MIN_AGE) {
 
-				if (userDto.getPassword().length() >= StringConstant.PASSWORD_LENGTH) {
+				if (userDto.getPassword().length() >= StringConstant.PWD_LENGTH) {
 					User user = accountComposer.compose(userDto);
 					userRepository.save(user);
 					account = accountService.generateAccount(user.getUserId(), StringConstant.SAVINGS_ACCOUNT_TYPE);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 					registerResponseDto.setBalance(account.getBalance());
 					return registerResponseDto;
 				} else {
-					throw new PasswordInvalidException(StringConstant.PASSWORD_VALIDATION_FAILED);
+					throw new PasswordInvalidException(StringConstant.PWD_VALIDATION_FAILED);
 				}
 			} else {
 				throw new AgeNotMatchedException(StringConstant.AGE_VALIDATION_FAILED);

@@ -14,9 +14,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.hcl.retailbanking.dto.FundTransferRequestDto;
 import com.hcl.retailbanking.dto.FundTransferResponseDto;
@@ -33,7 +34,7 @@ import static org.junit.Assert.*;
  * @author Vasavi
  * @description this class is used for to test operation for fund transfer
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class TransactionServiceImplTest {
 	/**
 	 * The Constant log.
@@ -131,7 +132,8 @@ public class TransactionServiceImplTest {
 	}
 
 	@Before
-	public void setup() {
+	public void init() {
+		MockitoAnnotations.initMocks(this);
 		transaction = getTransaction();
 		transaction1 = getTransaction1();
 		transaction2 = getTransaction2();
@@ -171,12 +173,9 @@ public class TransactionServiceImplTest {
 	 */
 	@Test
 	public void testGetSummaryForPositive() {
-		//Integer userId = 123456;
 		Mockito.when(accountRepository.findByUserId(account.getUserId())).thenReturn(account);
 		List<Transaction> transactionList =  transactionRespository.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
 		Mockito.when(transactionList).thenReturn(getMockData());
-		assertNotNull(account);
-		assertThat(account.getUserId()).isEqualToIgnoringNullFields(account.getUserId());
 		assertNotNull(transactionList);
 		transactionList.forEach(transaction -> {
 			assertThat(transaction).isNotNull();
@@ -203,7 +202,6 @@ public class TransactionServiceImplTest {
 		List<Transaction> transactionList = transactionRespository
 				.findTop5ByFromAccountOrderByTransactionIdDesc(000L);
 		Mockito.when(transactionList).thenReturn(Collections.emptyList());
-		assertNull(accountRepository.findByUserId(userId));
 		assertThat(transactionList).hasSize(0);
 	}
 }

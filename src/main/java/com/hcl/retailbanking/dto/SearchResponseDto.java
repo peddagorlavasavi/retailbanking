@@ -1,5 +1,6 @@
 package com.hcl.retailbanking.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.hcl.retailbanking.entity.Mortgage;
@@ -9,8 +10,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SearchResponseDto {
+public class SearchResponseDto implements Serializable {
 
+	
+	private static final long serialVersionUID = 1L;
 	private Integer userId;
 	private String firstName;
 	private String lastName;

@@ -17,33 +17,34 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ApiExceptionHandler {
 
-    Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
+    private static final  Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     /**
      * handleNullPointerExceptions()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public final ExceptionResponseDto handleNullPointerExceptions(NullPointerException ex) {
-        String defaultMessage = ex.getMessage();
+    public final ExceptionResponseDto handleNullPointerExceptions(NullPointerException exception) {
+        String defaultMessage = exception.getMessage();
         return new ExceptionResponseDto(ApiConstant.NO_ELEMENT_FOUND, defaultMessage);
     }
 
     /**
      * handleValidationError()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ExceptionResponseDto handleValidationError(MethodArgumentNotValidException ex) {
-        BindingResult bindingResult = ex.getBindingResult();
+    public ExceptionResponseDto handleValidationError(MethodArgumentNotValidException exception) {
+    	logger.debug("In handleValidationError");
+        BindingResult bindingResult = exception.getBindingResult();
         FieldError fieldError = bindingResult.getFieldError();
         String defaultMessage = fieldError.getDefaultMessage();
         return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, defaultMessage);
@@ -54,15 +55,15 @@ public class ApiExceptionHandler {
     /**
      * handleAgeNotMatchedException()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(AgeNotMatchedException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ExceptionResponseDto handleAgeNotMatchedException(AgeNotMatchedException ex) {
-        String msg = ex.getMessage();
-        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, msg);
+    public ExceptionResponseDto handleAgeNotMatchedException(AgeNotMatchedException exception) {
+        String message = exception.getMessage();
+        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, message);
     }
     
     /**
@@ -74,51 +75,51 @@ public class ApiExceptionHandler {
     @ExceptionHandler(PasswordInvalidException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ExceptionResponseDto handlePasswordInvalidException(PasswordInvalidException ex) {
-        String msg = ex.getMessage();
-        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, msg);
+    public ExceptionResponseDto handlePasswordInvalidException(PasswordInvalidException exception) {
+        String message = exception.getMessage();
+        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, message);
     }
     
     /**
      * handleMobileNumberExistException()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(MobileNumberExistException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ExceptionResponseDto handleMobileNumberExistException(MobileNumberExistException ex) {
-        String msg = ex.getMessage();
-        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, msg);
+    public ExceptionResponseDto handleMobileNumberExistException(MobileNumberExistException exception) {
+        String message = exception.getMessage();
+        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, message);
     }
     
     /**
      * handleAccountNotFoundException()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(AccountNotFoundException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ExceptionResponseDto handleAccountNotFoundException(AccountNotFoundException ex) {
-        String msg = ex.getMessage();
-        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, msg);
+    public ExceptionResponseDto handleAccountNotFoundException(AccountNotFoundException exception) {
+        String message = exception.getMessage();
+        return new ExceptionResponseDto(ApiConstant.VALIDATION_FAILED, message);
     }
     
 
     /**
      * handleCommonExceptionExceptions()
      *
-     * @param ex
+     * @param exception
      * @return
      */
     @ExceptionHandler(CommonException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
 	public ResponseEntity<ErrorResponse> commonException(CommonException e) {
-		return ResponseEntity.badRequest().body(new ErrorResponse(e.ex.getCode(), e.ex.getMessage()));
+		return ResponseEntity.badRequest().body(new ErrorResponse(e.exception.getCode(), e.exception.getMessage()));
 
 	}
 
@@ -131,8 +132,8 @@ public class ApiExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public final ExceptionResponseDto handleAllRuntimeExceptions(RuntimeException ex) {
-        String defaultMessage = ex.getMessage();
+    public final ExceptionResponseDto handleAllRuntimeExceptions(RuntimeException exception) {
+        String defaultMessage = exception.getMessage();
         return new ExceptionResponseDto(ApiConstant.INTERNAL_SERVER_ERROR, defaultMessage);
     }
 
@@ -145,8 +146,8 @@ public class ApiExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public final ExceptionResponseDto handleAllExceptions(Exception ex) {
-        String defaultMessage = ex.getMessage();
+    public final ExceptionResponseDto handleAllExceptions(Exception exception) {
+        String defaultMessage = exception.getMessage();
         return new ExceptionResponseDto(ApiConstant.INTERNAL_SERVER_ERROR, defaultMessage);
     }
 }

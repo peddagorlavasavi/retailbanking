@@ -81,7 +81,6 @@ public class TransactionController {
 		public ResponseEntity<AccountSummaryResponseDto> viewTransaction(@RequestBody TransactionDto transactionDto) {
 			AccountSummaryResponseDto apiResponseDto = new AccountSummaryResponseDto();
 			
-			//Predicate<Boolean> predicate= t->transactionDto.getYear() != null;
 					
 			if (transactionDto.getMonth() != null && transactionDto.getYear()!=null
 					&& transactionDto.getUserId() != null) {

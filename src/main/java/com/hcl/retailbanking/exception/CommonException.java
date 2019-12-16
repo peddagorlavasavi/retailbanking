@@ -7,22 +7,22 @@ import lombok.Setter;
 @Getter
 public class CommonException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
-	MessageCode ex;
+	MessageCode exception;
 
 	public CommonException() {
-		ex = MessageCode.RECORD_NOT_FOUND;
+		exception = MessageCode.RECORD_NOT_FOUND;
 	}
 
-	public MessageCode getEx() {
-		return ex;
+	public MessageCode getException() {
+		return exception;
 	}
 
-	public void setEx(MessageCode ex) {
-		this.ex = ex;
+	public void setEx(MessageCode exception) {
+		this.exception = exception;
 	}
 
-	public CommonException(MessageCode ex) {
-		this.ex = ex;
+	public CommonException(MessageCode exception) {
+		this.exception = exception;
 
 	}
 

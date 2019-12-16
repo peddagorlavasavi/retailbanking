@@ -64,7 +64,8 @@ public class TransactionServiceImpl implements TransactionService {
 	@Override
 	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) {
 		logger.info("Inside fundTransfer method");
-		Account account1 = null, account2 = null;
+		Account account1 = null, 
+				account2 = null;
 
 		Optional<Account> fromAccount = accountRepository.findById(fundTransferRequestDTO.getFromAccount());
 		Optional<Account> toAccount = accountRepository.findById(fundTransferRequestDTO.getToAccount());

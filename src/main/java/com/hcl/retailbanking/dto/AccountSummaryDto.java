@@ -14,9 +14,9 @@ public class AccountSummaryDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	Account account;
-	List<Transaction> transactions;
-	String message;
+	 private Account account;
+	 private List<Transaction> transactions;
+	 private String message;
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
