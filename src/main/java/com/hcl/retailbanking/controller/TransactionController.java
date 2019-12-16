@@ -67,10 +67,12 @@ public class TransactionController {
 	 * @return
 	 */
 	@GetMapping("/{userId}")
-	public ResponseEntity<AccountSummaryDto> accountSummary(@PathVariable("userId") Integer userId) {
+	public ResponseEntity<List<AccountSummaryDto>> accountSummary(@PathVariable("userId") Integer userId) {
 		logger.debug("In TransactionController:fundTransfer");
-		AccountSummaryDto accountSummaryDto = transactionService.accountSummary(userId);
-		return new ResponseEntity<>(accountSummaryDto, HttpStatus.OK);
+		List<AccountSummaryDto> accountSummaryDtos = transactionService.accountSummary(userId);
+		if(accountSummaryDtos!=null)
+			return new ResponseEntity<>(accountSummaryDtos, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 		/**

@@ -101,8 +101,10 @@ public class AccountServiceImpl implements AccountService {
 		User customer = userRepository.findUserByUserId(mortgage.getCustomerId());
 
 		if (user != null && customer != null && user.getRole().equalsIgnoreCase(StringConstant.ADMIN_ROLE)) {
+			Account account1 = accountRepository.getAccountByUserIdAndAccountType(customer.getUserId(),
+					StringConstant.MORTGAGE_ACCOUNT_TYPE);
 			logger.info(user.getRole());
-			if (accountValidator.validate(mortgage)) {
+			if (account1 == null && accountValidator.validate(mortgage)) {
 				logger.info("INSIDE CREATE ACCOUNT ");
 
 				account = new Account();
@@ -110,6 +112,8 @@ public class AccountServiceImpl implements AccountService {
 				account = generateAccount(customer.getUserId(), StringConstant.MORTGAGE_ACCOUNT_TYPE);
 				mortgage1 = createMortgage(mortgage, account);
 				creditAmount(mortgage1, account, user);
+				if (mortgage1 != null)
+					creditAmount(mortgage1, account, customer);
 			} else {
 				throw new NotEligibleForMortgageException();
 			}
@@ -151,21 +155,22 @@ public class AccountServiceImpl implements AccountService {
 			Transaction transaction = new Transaction();
 			transaction.setAmount(mortgage.getAmount());
 			transaction.setBenefactorName(user.getFirstName());
-			transaction.setToAccount(account1.getAccountNumber());
-			transaction.setFromAccount(account.getAccountNumber());
+			transaction.setToAccount(account.getAccountNumber());
+			transaction.setFromAccount(account1.getAccountNumber());
 			transaction.setTransactionType(StringConstant.CREDIT);
 			transaction.setTransactionDate(LocalDate.now());
 			transaction2 = transactionRepository.save(transaction);
 			if (transaction2 != null) {
-				Double balance = account.getBalance();
-				balance = balance - mortgage.getAmount();
+				Double balance = (-mortgage.getAmount());
 				account.setBalance(balance);
-				accountRepository.save(account);
-
-				Double balance1 = account1.getBalance();
-				balance1 = balance1 + mortgage.getAmount();
-				account1.setBalance(balance1);
-				accountRepository.save(account1);
+				account = accountRepository.save(account);
+				if (account != null) {
+					logger.debug("SAVING BALANCE: "+account1.getBalance()+"  ::: "+mortgage.getAmount());
+					Double balance1 = account1.getBalance();
+					balance1 = balance1 + mortgage.getAmount();
+					account1.setBalance(balance1);
+					accountRepository.save(account1);
+				}
 			}
 		}
 

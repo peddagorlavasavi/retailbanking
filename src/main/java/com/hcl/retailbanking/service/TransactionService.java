@@ -27,7 +27,7 @@ public interface TransactionService {
 	 */
 	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO) throws CommonException;
 
-	public AccountSummaryDto accountSummary(Integer userId);
+	public List<AccountSummaryDto> accountSummary(Integer userId);
 
 	/**
 	 * From TransactionDto input is taken as month and year from user and

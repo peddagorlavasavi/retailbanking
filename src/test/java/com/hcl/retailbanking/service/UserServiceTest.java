@@ -92,7 +92,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
 		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
 		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage);
-		List<UserListResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
+		List<SearchResponseDto> userListResponseDtoLists=userServiceImpl.getAllUser(1);
 		assertEquals(1, userListResponseDtoLists.size());
 	}
 
@@ -195,7 +195,7 @@ public class UserServiceTest {
 	@Test
 	public void testGetAllUserForUserNull() {
 		Mockito.when(userRepository.getAdmin(9, StringConstant.ROLE)).thenReturn(user);
-		List<UserListResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(9);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(9);
 		assertEquals(0, userListResponseDtoLists.size());
 	}
 
@@ -204,7 +204,7 @@ public class UserServiceTest {
 		Account account = null;
 		Mockito.when(userRepository.getAdmin(1, StringConstant.ROLE)).thenReturn(user);
 		Mockito.when(accountRepository.findByUserId(6)).thenReturn(account);
-		List<UserListResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
 		assertEquals(0, userListResponseDtoLists.size());
 	}
 
@@ -215,7 +215,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
 		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
 		Mockito.when(mortgagerepository.findByAccountNumber(12345L)).thenReturn(mortgage);
-		List<UserListResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
 		assertEquals(1, userListResponseDtoLists.size());
 	}
 

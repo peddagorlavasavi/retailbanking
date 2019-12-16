@@ -23,18 +23,12 @@ import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
-import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
 import com.hcl.retailbanking.exception.MobileNumberExistException;
 import com.hcl.retailbanking.exception.PasswordInvalidException;
 import com.hcl.retailbanking.service.UserService;
 
-/**
- * UserController is the Controller class
- * 
- * @author Hema This Controller is used to save the user details and to verify
- *         the user
- */
+
 @RestController
 @RequestMapping("/users")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
@@ -70,7 +64,7 @@ public class UserController {
 	 * 
 	 * @param mobileNumber
 	 * @param password
-	 * @return
+	 * @return loginResponseDto
 	 */
 	@PostMapping("/user/login")
 	public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginRequestDto apiLoginRequestDto) {
@@ -86,16 +80,18 @@ public class UserController {
 }
 	
 	/**
+	 *  @author Hema. @since 2019-12-14.
 	 * @description -> getting all the customers
 	 * @param userId
 	 * @return List<UserListResponseDto>
 	 */
 	@GetMapping("/{userId}")
-	public ResponseEntity<List<UserListResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
-		logger.info("Listing all the users");
-		List<UserListResponseDto> userListResponseDto = userService.getAllUser(userId);
-		if (userListResponseDto != null) {
-			return new ResponseEntity<>(userListResponseDto, HttpStatus.OK);
+	
+	public ResponseEntity<List<SearchResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
+		logger.info("Listing all the users"+userId);
+		List<SearchResponseDto> searchResponseDto = userService.getAllUser(userId);
+		if (searchResponseDto != null) {
+			return new ResponseEntity<>(searchResponseDto, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -110,7 +106,7 @@ public class UserController {
 	 * @param accountNumber
 	 * @return mortgage details and user details are fetched
 	 */
-	@GetMapping("/{userId}/search")
+	@GetMapping("/{userId}")
 	public ResponseEntity<List<SearchResponseDto>> getAccountDetails(@PathVariable("userId") Integer userId,
 			@RequestParam Long accountNumber) {
 		List<SearchResponseDto> accountList = userService.searchAccount(userId, accountNumber);
@@ -118,7 +114,7 @@ public class UserController {
 			logger.info("got the list");
 			return new ResponseEntity<>(accountList, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(accountList, HttpStatus.OK);
 		}
 	}
 
