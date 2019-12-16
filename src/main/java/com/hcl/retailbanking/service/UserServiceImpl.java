@@ -107,38 +107,46 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @description -> getAllUser is used to get all users
 	 * @param userId
-	 * @throws InvalidAdminException 
+	 * @throws InvalidAdminException
 	 */
 	@Override
-	public List<UserListResponseDto> getAllUser(Integer userId)  {
+	public List<SearchResponseDto> getAllUser(Integer userId) {
 		User user = userRepository.getAdmin(userId, StringConstant.ROLE);
 		logger.info("inside getAllUser " + user.getUserId());
-		List<UserListResponseDto> userListResponseDtoList = new ArrayList<>();
+		List<SearchResponseDto> searchResponseDtos = new ArrayList<>();
 		if (user != null) {
 			List<User> userList = userRepository.getByRole(StringConstant.CUSTOMER);
 
 			userList.forEach(users -> {
 				logger.info("inside getAllUser " + users.getUserId());
 
-				UserListResponseDto userListResponseDto = new UserListResponseDto();
-				Account account = accountRepository.findByUserId(users.getUserId());
+				SearchResponseDto searchResponseDto = new SearchResponseDto();
+				Account account = accountRepository.getAccountByUserIdAndAccountType(users.getUserId(),
+						StringConstant.SAVINGS_ACCOUNT_TYPE);
+				Account account1 = accountRepository.getAccountByUserIdAndAccountType(users.getUserId(),
+						StringConstant.MORTGAGE_ACCOUNT_TYPE);
 
 				if (account != null) {
 					logger.info("inside getAllUser " + account.getAccountNumber());
+					UserListResponseDto userListResponseDto = new UserListResponseDto();
 
-					BeanUtils.copyProperties(users, userListResponseDto);
-					BeanUtils.copyProperties(account, userListResponseDto);
-
-					Mortgage mortgage = mortgagerepository.findByAccountNumber(account.getAccountNumber());
-					if (mortgage != null) {
-						// BeanUtils.copyProperties(mortgage, userListResponseDto);
-						userListResponseDto.setMortgage(mortgage);
+					if (account1 != null) {
+						Mortgage mortgage = mortgagerepository.findByAccountNumber(account1.getAccountNumber());
+						if (mortgage != null) {
+							// BeanUtils.copyProperties(mortgage, userListResponseDto);
+							userListResponseDto.setMortgage(mortgage);
+						}
+						BeanUtils.copyProperties(account1, userListResponseDto);
+						searchResponseDto.setMortgage(userListResponseDto);
 					}
 				}
-				userListResponseDtoList.add(userListResponseDto);
+				BeanUtils.copyProperties(account, searchResponseDto);
+				BeanUtils.copyProperties(users, searchResponseDto);
+
+				searchResponseDtos.add(searchResponseDto);
 			});
 		}
-		return userListResponseDtoList;
+		return searchResponseDtos;
 	}
 
 	/**
@@ -178,21 +186,41 @@ public class UserServiceImpl implements UserService {
 	 * @return mortgage details and user details are fetched
 	 */
 	@Override
-	public List<SearchResponseDto> searchAccount(Integer userId, Long accountNumber) {
+	public List<SearchResponseDto> searchAccount(Integer userId, String accountNumber) {
 		User user = userRepository.findUserByRole(userId, StringConstant.ADMIN_ROLE);
 		List<SearchResponseDto> list = new ArrayList<>();
 		if (user != null) {
-			List<Account> availableList = accountRepository.findByAccountNumber("" + accountNumber,
+			List<Account> availableList = accountRepository.findByAccountNumber(accountNumber,
 					StringConstant.SAVINGS_ACCOUNT_TYPE);
-			log.info("got the account lists");
+			log.info("got the account lists" + availableList.size());
 			availableList.forEach(account -> {
+
+				User user1 = userRepository.findUserByRole(account.getUserId(), StringConstant.CUSTOMER_ROLE);
+
 				SearchResponseDto searchResponseDto = new SearchResponseDto();
-				User users = userRepository.findUserByUserId(account.getUserId());
-				BeanUtils.copyProperties(users, searchResponseDto);
-				Mortgage mortgage = mortgageRepository.findByAccountNumber(account.getAccountNumber());
-				if (mortgage != null)
-					searchResponseDto.setMortgage(mortgage);
+				logger.info("inside searchAccount " );
+
+				if (user1!=null) {
+					Account account1 = accountRepository.getAccountByUserIdAndAccountType(user1.getUserId(),
+							StringConstant.MORTGAGE_ACCOUNT_TYPE);
+					UserListResponseDto userListResponseDto = new UserListResponseDto();
+
+					if (account1 != null) {
+						Mortgage mortgage = mortgagerepository.findByAccountNumber(account1.getAccountNumber());
+						if (mortgage != null) {
+							// BeanUtils.copyProperties(mortgage, userListResponseDto);
+							userListResponseDto.setMortgage(mortgage);
+						}
+						BeanUtils.copyProperties(account1, userListResponseDto);
+						searchResponseDto.setMortgage(userListResponseDto);
+					}
+				}
+				logger.info("inside ZZZZZ " + account.getAccountNumber());
+
+				BeanUtils.copyProperties(account, searchResponseDto);
+				BeanUtils.copyProperties(user1, searchResponseDto);
 				list.add(searchResponseDto);
+
 			});
 		}
 		return list;

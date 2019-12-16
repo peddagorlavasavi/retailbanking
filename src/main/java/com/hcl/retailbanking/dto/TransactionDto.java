@@ -12,4 +12,5 @@ public class TransactionDto {
 	private Integer userId;
 	private String month;
 	private Integer year;
+	private String type;
 }

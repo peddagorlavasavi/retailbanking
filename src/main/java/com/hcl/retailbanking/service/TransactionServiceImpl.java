@@ -1,6 +1,7 @@
 package com.hcl.retailbanking.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -184,13 +185,18 @@ public class TransactionServiceImpl implements TransactionService {
 	 * @param userId
 	 * @return accountSummaryDto
 	 */
-	public AccountSummaryDto accountSummary(Integer userId) {
-		AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
+	public List<AccountSummaryDto> accountSummary(Integer userId) {
+		List<AccountSummaryDto> list = new ArrayList<AccountSummaryDto>();
 		// Account account = accountRepository.findByUserId(userId);
 		Account account = accountRepository.getAccountByUserIdAndAccountType(userId,
 				StringConstant.SAVINGS_ACCOUNT_TYPE);
 
+		Account account1 = accountRepository.getAccountByUserIdAndAccountType(userId,
+				StringConstant.MORTGAGE_ACCOUNT_TYPE);
+
 		if (account != null) {
+			AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
+
 			accountSummaryDto.setAccount(account);
 			List<Transaction> transactionList = transactionRepository
 					.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
@@ -201,10 +207,26 @@ public class TransactionServiceImpl implements TransactionService {
 				accountSummaryDto.setMessage(ApiConstant.EMPTY);
 				accountSummaryDto.setTransactions(Collections.emptyList());
 			}
+			list.add(accountSummaryDto);
 		} else {
 			throw new AccountNotFoundException();
 		}
-		return accountSummaryDto;
+		if (account1 != null) {
+			AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
+			accountSummaryDto.setAccount(account1);
+			List<Transaction> transactionList = transactionRepository
+					.findTop5ByFromAccountOrderByTransactionIdDesc(account1.getAccountNumber());
+			if (transactionList != null && !transactionList.isEmpty()) {
+				accountSummaryDto.setMessage(ApiConstant.SUCCESS);
+				accountSummaryDto.setTransactions(transactionList);
+			} else {
+				accountSummaryDto.setMessage(ApiConstant.EMPTY);
+				accountSummaryDto.setTransactions(Collections.emptyList());
+			}
+			list.add(accountSummaryDto);
+		}
+
+		return list;
 	}
 
 	/**
@@ -218,7 +240,7 @@ public class TransactionServiceImpl implements TransactionService {
 		logger.info("Entering into transaction method with inputs");
 		String month = transactionDto.getMonth();
 		Integer year = transactionDto.getYear();
-		Account account = accountRepository.findAccountNumberByUserId(transactionDto.getUserId());
+		Account account = accountRepository.getAccountByUserIdAndAccountType(transactionDto.getUserId(), transactionDto.getType());
 		Long accountNumber = account.getAccountNumber();
 		if (accountNumber != null) {
 			List<LocalDate> dates = Utils.getDateFromMonthAndYear(month, year);

@@ -19,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
+import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
 import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.entity.Account;
@@ -90,7 +91,7 @@ public class UserServiceTest {
 		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
 		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
 		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage);
-		List<UserListResponseDto> userListResponseDtoLists=userServiceImpl.getAllUser(1);
+		List<SearchResponseDto> userListResponseDtoLists=userServiceImpl.getAllUser(1);
 		assertEquals(1, userListResponseDtoLists.size());
 	}
 	

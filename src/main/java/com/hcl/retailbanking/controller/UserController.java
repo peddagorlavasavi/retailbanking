@@ -23,7 +23,6 @@ import com.hcl.retailbanking.dto.LoginResponseDto;
 import com.hcl.retailbanking.dto.RegisterResponseDto;
 import com.hcl.retailbanking.dto.SearchResponseDto;
 import com.hcl.retailbanking.dto.UserDto;
-import com.hcl.retailbanking.dto.UserListResponseDto;
 import com.hcl.retailbanking.exception.AgeNotMatchedException;
 import com.hcl.retailbanking.exception.MobileNumberExistException;
 import com.hcl.retailbanking.exception.PasswordInvalidException;
@@ -91,11 +90,11 @@ public class UserController {
 	 * @return List<UserListResponseDto>
 	 */
 	@GetMapping("/{userId}")
-	public ResponseEntity<List<UserListResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
+	public ResponseEntity<List<SearchResponseDto>> getAllUser(@PathVariable("userId") Integer userId){
 		logger.info("Listing all the users"+userId);
-		List<UserListResponseDto> userListResponseDto = userService.getAllUser(userId);
-		if (userListResponseDto != null) {
-			return new ResponseEntity<>(userListResponseDto, HttpStatus.OK);
+		List<SearchResponseDto> SearchResponseDto = userService.getAllUser(userId);
+		if (SearchResponseDto != null) {
+			return new ResponseEntity<>(SearchResponseDto, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -112,13 +111,13 @@ public class UserController {
 	 */
 	@GetMapping("/{userId}/search")
 	public ResponseEntity<List<SearchResponseDto>> getAccountDetails(@PathVariable("userId") Integer userId,
-			@RequestParam Long accountNumber) {
+			@RequestParam String accountNumber) {
 		List<SearchResponseDto> accountList = userService.searchAccount(userId, accountNumber);
 		if (accountList != null && !accountList.isEmpty()) {
 			logger.info("got the list");
 			return new ResponseEntity<>(accountList, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(accountList, HttpStatus.OK);
 		}
 	}
 

@@ -61,6 +61,7 @@ public class TransactionControllerTest {
 	TransactionController transactionController;
 
 	MockMvc mockMvc;
+	List<AccountSummaryDto> accountSummaryDtos = new ArrayList<AccountSummaryDto>();
 	AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
 	static Account account = new Account();
 
@@ -117,6 +118,7 @@ public class TransactionControllerTest {
 
 		accountSummaryDto.setTransactions(getMockData());
 		accountSummaryDto.setAccount(account);
+		accountSummaryDtos.add(accountSummaryDto);
 
 		mockMvc = MockMvcBuilders.standaloneSetup(transactionController).build();
 	}

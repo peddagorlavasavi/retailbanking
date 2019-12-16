@@ -25,6 +25,11 @@ public class SearchResponseDto {
 	private String gender;
 	private String status;
 	private String role;
+	
+	private Long accountNumber;
+	private Double balance;
+	private String accountType;
+	private Double salary;
 
-	private Mortgage mortgage;
+	private UserListResponseDto mortgage;
 }
