@@ -1,10 +1,10 @@
 package com.hcl.retailbanking.dto;
 
-import com.hcl.retailbanking.entity.Account;
-import com.hcl.retailbanking.entity.Transaction;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.hcl.retailbanking.entity.Account;
+import com.hcl.retailbanking.entity.Transaction;
 
 /**
  * @author Vasavi
