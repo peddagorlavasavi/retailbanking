@@ -1,4 +1,4 @@
-package com.hcl.retailbanking.util.Impl;
+package com.hcl.retailbanking.util.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

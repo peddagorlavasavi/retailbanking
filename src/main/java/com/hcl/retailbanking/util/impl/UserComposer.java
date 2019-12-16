@@ -1,4 +1,4 @@
-package com.hcl.retailbanking.util.Impl;
+package com.hcl.retailbanking.util.impl;
 
 import org.springframework.stereotype.Component;
 
