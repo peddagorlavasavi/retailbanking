@@ -61,9 +61,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	AccountComposer<UserDto, User> accountComposer;
 
-	@Autowired
-	MortgageRepository mortgagerepository;
-
+	
 	/**
 	 * @description This is the method used to save the user details
 	 * 
@@ -131,13 +129,14 @@ public class UserServiceImpl implements UserService {
 					UserListResponseDto userListResponseDto = new UserListResponseDto();
 
 					if (account1 != null) {
-						Mortgage mortgage = mortgagerepository.findByAccountNumber(account1.getAccountNumber());
+						Mortgage mortgage = mortgageRepository.findByAccountNumber(account1.getAccountNumber());
 						if (mortgage != null) {
 							// BeanUtils.copyProperties(mortgage, userListResponseDto);
 							userListResponseDto.setMortgage(mortgage);
 						}
 						BeanUtils.copyProperties(account1, userListResponseDto);
 						searchResponseDto.setMortgage(userListResponseDto);
+						
 					}
 				}
 				BeanUtils.copyProperties(account, searchResponseDto);
@@ -206,7 +205,7 @@ public class UserServiceImpl implements UserService {
 					UserListResponseDto userListResponseDto = new UserListResponseDto();
 
 					if (account1 != null) {
-						Mortgage mortgage = mortgagerepository.findByAccountNumber(account1.getAccountNumber());
+						Mortgage mortgage = mortgageRepository.findByAccountNumber(account1.getAccountNumber());
 						if (mortgage != null) {
 							// BeanUtils.copyProperties(mortgage, userListResponseDto);
 							userListResponseDto.setMortgage(mortgage);

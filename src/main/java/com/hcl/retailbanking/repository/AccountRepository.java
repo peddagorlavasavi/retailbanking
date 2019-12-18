@@ -49,4 +49,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 	@Query("select c from Account c where CONCAT('',c.accountNumber) like %:accountNumber% and accountType =:accountType")
 	public List<Account> findByAccountNumber(@Param("accountNumber") String accountNumber, String accountType);
 
+	@Query("select a from Account a where a.accountNumber=:accountNumber")
+	public Account getAccountByAccountNumber(@Param("accountNumber") Long accountNumber);
+
 }

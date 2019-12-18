@@ -21,5 +21,5 @@ public class FundTransferRequestDto implements Serializable {
 	private Long toAccount;
 	private Double amount;
 	private String benefactorName;
-
+	private String remarks;
 }

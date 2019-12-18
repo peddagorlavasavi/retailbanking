@@ -59,10 +59,11 @@ public class TransactionController {
 	}
 	
 	/**
-	 * @description this method is used to view account summary
+	 * @author Sujal
+	 * @description this API is used to view account summary
 	 *  accountSummary() method will return account summary as well as last five transactions
-	 * @param userId
-	 * @return
+	 * @param userId is admin user Id 
+	 * @return <List<AccountSummaryDto>> list of Account Summary details
 	 */
 	@GetMapping("/{userId}")
 	public ResponseEntity<List<AccountSummaryDto>> accountSummary(@PathVariable("userId") Integer userId) {

@@ -159,6 +159,7 @@ public class TransactionServiceImpl implements TransactionService {
 		transaction.setBenefactorName(fundTransferRequestDTO.getBenefactorName());
 		transaction.setTransactionDate(LocalDate.now());
 		transaction.setTransactionType(transactionType);
+		transaction.setRemarks(fundTransferRequestDTO.getRemarks());
 		return transaction;
 	}
 

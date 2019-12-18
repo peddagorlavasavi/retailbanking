@@ -177,4 +177,12 @@ public class AccountServiceImpl implements AccountService {
 		return transaction2;
 	}
 
+	@Override
+	public Boolean getAccountNumber(Long accountNumber) {
+		Account account =accountRepository.getAccountByAccountNumber(accountNumber);
+		if(account!=null)
+			return true;
+		return false;
+	}
+
 }

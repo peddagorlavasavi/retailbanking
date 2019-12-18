@@ -25,6 +25,13 @@ public interface TransactionService {
 	 */
 	public FundTransferResponseDto fundTransfer(FundTransferRequestDto fundTransferRequestDTO);
 
+	/**
+	 * @author Sujal
+	 * @description this method is used to view account summary
+	 *  accountSummary() method will return account summary as well as last five transactions
+	 * @param userId is admin user Id 
+	 * @return <List<AccountSummaryDto>> list of Account Summary details
+	 */
 	public List<AccountSummaryDto> accountSummary(Integer userId);
 
 	/**

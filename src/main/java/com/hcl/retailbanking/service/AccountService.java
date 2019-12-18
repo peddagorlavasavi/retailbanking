@@ -11,4 +11,6 @@ public interface AccountService {
 
 	Account createMortgageAccount(Integer userId, Mortgage mortgage);
 
+	public Boolean getAccountNumber(Long accountNumber);
+
 }

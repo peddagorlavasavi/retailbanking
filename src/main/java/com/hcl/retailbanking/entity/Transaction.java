@@ -36,5 +36,6 @@ public class Transaction implements Serializable {
 	private String transactionType;
 	private LocalDate transactionDate;
 	private String benefactorName;
+	private String remarks;
 
 }
