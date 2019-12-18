@@ -48,11 +48,10 @@ public class UserServiceTest {
 	AccountService accountService;
 	@Mock
 	AccountRepository accountRepository;
-	
+
 	@Mock
 	MortgageRepository mortgagerepository;
 
-	
 	@Mock
 	AccountComposer<UserDto, User> accountComposer;
 
@@ -60,14 +59,17 @@ public class UserServiceTest {
 	User user = new User();
 	RegisterResponseDto registerResponseDto = new RegisterResponseDto();
 	LoginResponseDto apiLoginInfoDto = new LoginResponseDto();
-	
-	List<UserListResponseDto> userListResponseDtoList=new ArrayList<>();
-	UserListResponseDto userListResponseDto=new UserListResponseDto();
-	List<User> userList=new ArrayList<>();
-	Mortgage mortgage=new Mortgage();
+
+	List<UserListResponseDto> userListResponseDtoList = new ArrayList<>();
+	UserListResponseDto userListResponseDto = new UserListResponseDto();
+	List<User> userList = new ArrayList<>();
+	Mortgage mortgage = new Mortgage();
 	User users = new User();
 	Account account = new Account();
-	
+	List<Account> accountList = new ArrayList<>();
+	SearchResponseDto searchResponseDto = new SearchResponseDto();
+	List<SearchResponseDto> searchResponseDtoList = new ArrayList<>();
+
 	@Before
 	public void setUpd() {
 		user.setUserId(1);
@@ -83,10 +85,9 @@ public class UserServiceTest {
 		userListResponseDto.setMortgage(mortgage);
 		userListResponseDtoList.add(userListResponseDto);
 	}
-	
-	
+
 	@Test
-	public void testGetAlluser()  {
+	public void testGetAlluser() {
 		Mockito.when(userRepository.getAdmin(1, StringConstant.ROLE)).thenReturn(user);
 		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
 		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
@@ -94,9 +95,6 @@ public class UserServiceTest {
 		List<SearchResponseDto> userListResponseDtoLists=userServiceImpl.getAllUser(1);
 		assertEquals(1, userListResponseDtoLists.size());
 	}
-	
-
-	
 
 	@Test
 	public void testSaveUserPositive()
@@ -124,14 +122,16 @@ public class UserServiceTest {
 		registerResponseDto.setAccountNumber(account.getAccountNumber());
 		registerResponseDto.setBalance(10000.0);
 
-		//user=accountComposer.compose(userDto);
+		// user=accountComposer.compose(userDto);
 		user.setUserId(1223);
-		
-		Mockito.when(userRepository.save(user)).thenReturn(user);
-		Mockito.when(accountService.generateAccount(user.getUserId(),StringConstant.SAVINGS_ACCOUNT_TYPE)).thenReturn(account);
 
-		//RegisterResponseDto registerResponseDto = userServiceImpl.createAccount(userDto);
-		//Assert.assertNotNull(registerResponseDto);
+		Mockito.when(userRepository.save(user)).thenReturn(user);
+		Mockito.when(accountService.generateAccount(user.getUserId(), StringConstant.SAVINGS_ACCOUNT_TYPE))
+				.thenReturn(account);
+
+		// RegisterResponseDto registerResponseDto =
+		// userServiceImpl.createAccount(userDto);
+		// Assert.assertNotNull(registerResponseDto);
 
 	}
 
@@ -169,36 +169,107 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testLoginUserNegative() {
+	public void testLoginUserForUserNull() {
+		User user = null;
+		Mockito.when(userRepository.getUserByMobileNumber("9894803620")).thenReturn(user);
+		LoginResponseDto apiLoginInfoDtos = userServiceImpl.loginUser("9894803620", "hemanive");
+		assertEquals(ApiConstant.FAILED, apiLoginInfoDtos.getStatus());
+	}
 
-		user.setUserId(1);
-		user.setFirstName("Hema");
-		user.setLastName("Jayakumar");
-		user.setDob(LocalDate.of(1998, 8, 25));
-		user.setMobileNumber("9894803625");
-		user.setEmail("hema@gmail.com");
-		user.setTypeOfId("Aadhar");
-		user.setIdProofNumber("IND467");
-		user.setAge(21);
-		user.setAddress("Chennai");
-		user.setPassword("hemanive");
-		user.setGender("Female");
-		user.setStatus(StringConstant.USER_STATUS);
-
-		account.setAccountNumber(100100L);
-		account.setAccountType("SAVINGS");
-		account.setBalance(1000.0);
-		account.setIfscCode("IN35");
-		account.setUserId(1);
-
-		apiLoginInfoDto.setUserId(1);
-		apiLoginInfoDto.setAccountNumber(100100L);
-		apiLoginInfoDto.setUserName("Hema");
-		apiLoginInfoDto.setStatus(ApiConstant.SUCCESS);
-
+	@Test
+	public void testLoginUserForPasswordMismatch() {
 		Mockito.when(userRepository.getUserByMobileNumber("9894803625")).thenReturn(user);
-		LoginResponseDto apiLoginInfoDtos = userServiceImpl.loginUser("9894803625", "hemanive");
-		Assert.assertNotNull(apiLoginInfoDtos);
+		LoginResponseDto apiLoginInfoDtos = userServiceImpl.loginUser("9894803620", "hemave");
+		assertEquals(ApiConstant.FAILED, apiLoginInfoDtos.getStatus());
+	}
+
+	@Test
+	public void testLoginUserForAccountNull() {
+		Account account = null;
+		Mockito.when(userRepository.getUserByMobileNumber("9894803625")).thenReturn(user);
+		Mockito.when(accountService.getAccountDetails(7)).thenReturn(account);
+		LoginResponseDto apiLoginInfoDtos = userServiceImpl.loginUser("9894803620", "hemanive");
+		assertEquals(ApiConstant.FAILED, apiLoginInfoDtos.getStatus());
+	}
+
+	@Test
+	public void testGetAllUserForUserNull() {
+		Mockito.when(userRepository.getAdmin(9, StringConstant.ROLE)).thenReturn(user);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(9);
+		assertEquals(0, userListResponseDtoLists.size());
+	}
+
+	@Test
+	public void testGetAllUserForCustomerNull() {
+		Account account = null;
+		Mockito.when(userRepository.getAdmin(1, StringConstant.ROLE)).thenReturn(user);
+		Mockito.when(accountRepository.findByUserId(6)).thenReturn(account);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
+		assertEquals(0, userListResponseDtoLists.size());
+	}
+
+	@Test
+	public void testGetAllUserForMortgageNull() {
+		Mortgage mortgage = null;
+		Mockito.when(userRepository.getAdmin(1, StringConstant.ROLE)).thenReturn(user);
+		Mockito.when(userRepository.getByRole(StringConstant.CUSTOMER)).thenReturn(userList);
+		Mockito.when(accountRepository.findByUserId(2)).thenReturn(account);
+		Mockito.when(mortgagerepository.findByAccountNumber(12345L)).thenReturn(mortgage);
+		List<SearchResponseDto> userListResponseDtoLists = userServiceImpl.getAllUser(1);
+		assertEquals(1, userListResponseDtoLists.size());
+	}
+
+	@Test
+	public void searchAccountPostiveTest() {
+		user.setUserId(1);
+		account.setUserId(1);
+		account.setAccountNumber(123456L);
+		accountList.add(account);
+		Mockito.when(userRepository.findUserByRole(1, StringConstant.ADMIN_ROLE)).thenReturn(user);
+		Mockito.when(accountRepository.findByAccountNumber("123456", StringConstant.SAVINGS_ACCOUNT_TYPE))
+				.thenReturn(accountList);
+		Mockito.when(userRepository.findUserByUserId(1)).thenReturn(user);
+		BeanUtils.copyProperties(user, searchResponseDto);
+		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage);
+		searchResponseDto.setMortgage(mortgage);
+		searchResponseDtoList.add(searchResponseDto);
+	}
+
+	@Test
+	public void searchAccountNegativeTest() {
+		User user1 = null;
+		account.setUserId(1);
+		account.setAccountNumber(123456L);
+		accountList.add(account);
+		Mockito.when(userRepository.findUserByRole(1, StringConstant.ADMIN_ROLE)).thenReturn(user1);
+		Mockito.when(accountRepository.findByAccountNumber("123456", StringConstant.SAVINGS_ACCOUNT_TYPE))
+				.thenReturn(accountList);
+		Mockito.when(userRepository.findUserByUserId(1)).thenReturn(user);
+		BeanUtils.copyProperties(user, searchResponseDto);
+		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage);
+		searchResponseDto.setMortgage(mortgage);
+		searchResponseDtoList.add(searchResponseDto);
+		List<SearchResponseDto> result = userServiceImpl.searchAccount(1, 123456L);
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void searchAccountNegativeNullTest() {
+		user.setUserId(1);
+		account.setUserId(1);
+		account.setAccountNumber(123456L);
+		accountList.add(account);
+		Mockito.when(userRepository.findUserByRole(1, StringConstant.ADMIN_ROLE)).thenReturn(user);
+		Mockito.when(accountRepository.findByAccountNumber("123456", StringConstant.SAVINGS_ACCOUNT_TYPE))
+				.thenReturn(accountList);
+		Mockito.when(userRepository.findUserByUserId(1)).thenReturn(user);
+		BeanUtils.copyProperties(user, searchResponseDto);
+		Mortgage mortgage1 = null;
+		Mockito.when(mortgagerepository.findByAccountNumber(123456L)).thenReturn(mortgage1);
+		searchResponseDto.setMortgage(mortgage1);
+		searchResponseDtoList.add(searchResponseDto);
+		List<SearchResponseDto> result = userServiceImpl.searchAccount(1, 123456L);
+		assertEquals(1, result.size());
 	}
 
 }

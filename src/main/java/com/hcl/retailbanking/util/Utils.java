@@ -122,7 +122,6 @@ public class Utils {
 	 * @return
 	 */
 	public static Integer calculateAge(LocalDate dob) {
-		// TODO Auto-generated method stub
 		if(dob!=null)
 			return LocalDate.now().getYear() - dob.getYear();
 		return 0;

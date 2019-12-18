@@ -2,7 +2,6 @@ package com.hcl.retailbanking.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +14,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.hcl.retailbanking.dto.FundTransferRequestDto;
 import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 import com.hcl.retailbanking.repository.AccountRepository;
 import com.hcl.retailbanking.repository.TransactionRepository;
 import com.hcl.retailbanking.util.Utils;
@@ -34,7 +35,7 @@ import static org.junit.Assert.*;
  * @author Vasavi
  * @description this class is used for to test operation for fund transfer
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class TransactionServiceImplTest {
 	/**
 	 * The Constant log.
@@ -132,7 +133,8 @@ public class TransactionServiceImplTest {
 	}
 
 	@Before
-	public void setup() {
+	public void init() {
+		MockitoAnnotations.initMocks(this);
 		transaction = getTransaction();
 		transaction1 = getTransaction1();
 		transaction2 = getTransaction2();
@@ -144,7 +146,7 @@ public class TransactionServiceImplTest {
 	}
 
 	@Test
-	public void testFundTransfer() {
+	public void testFundTransfer() throws CommonException {
 		logger.info("Inside the fundTransferTest method ");
 		Mockito.when(accountRepository.findById(fundTransferRequestDto.getFromAccount()))
 				.thenReturn(Optional.of(account));
@@ -156,7 +158,7 @@ public class TransactionServiceImplTest {
 
 	// checking for zero amount fund transfer test case
 	@Test
-	public void testFundTransferNegative() {
+	public void testFundTransferNegative() throws CommonException {
 		logger.info("Inside the fundTransferNegativeTest method ");
 		Mockito.when(accountRepository.findById(fundTransferRequestDto.getFromAccount()))
 				.thenReturn(Optional.of(account));
@@ -172,12 +174,10 @@ public class TransactionServiceImplTest {
 	 */
 	@Test
 	public void testGetSummaryForPositive() {
-		//Integer userId = 123456;
 		Mockito.when(accountRepository.findByUserId(account.getUserId())).thenReturn(account);
-		List<Transaction> transactionList =  transactionRespository.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
+		List<Transaction> transactionList = transactionRespository
+				.findTop5ByFromAccountOrderByTransactionIdDesc(account.getAccountNumber());
 		Mockito.when(transactionList).thenReturn(getMockData());
-		assertNotNull(account);
-		assertThat(account.getUserId()).isEqualToIgnoringNullFields(account.getUserId());
 		assertNotNull(transactionList);
 		transactionList.forEach(transaction -> {
 			assertThat(transaction).isNotNull();
@@ -201,10 +201,8 @@ public class TransactionServiceImplTest {
 	public void testGetSummaryForNegative() {
 		Integer userId = null;
 		Mockito.when(accountRepository.findByUserId(userId)).thenReturn(null);
-		List<Transaction> transactionList = transactionRespository
-				.findTop5ByFromAccountOrderByTransactionIdDesc(000L);
+		List<Transaction> transactionList = transactionRespository.findTop5ByFromAccountOrderByTransactionIdDesc(000L);
 		Mockito.when(transactionList).thenReturn(Collections.emptyList());
-		assertNull(accountRepository.findByUserId(userId));
 		assertThat(transactionList).hasSize(0);
 	}
 }

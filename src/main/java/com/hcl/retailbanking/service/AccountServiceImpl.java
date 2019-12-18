@@ -81,7 +81,6 @@ public class AccountServiceImpl implements AccountService {
 	 */
 	@Override
 	public Account getAccountDetails(Integer userId) {
-		// TODO Auto-generated method stub
 		return accountRepository.getAccountByUserIdAndAccountType(userId, StringConstant.SAVINGS_ACCOUNT_TYPE);
 	}
 
@@ -112,6 +111,7 @@ public class AccountServiceImpl implements AccountService {
 				account.setAccountType(StringConstant.MORTGAGE_ACCOUNT_TYPE);
 				account = generateAccount(customer.getUserId(), StringConstant.MORTGAGE_ACCOUNT_TYPE);
 				mortgage1 = createMortgage(mortgage, account);
+				creditAmount(mortgage1, account, user);
 				if (mortgage1 != null)
 					creditAmount(mortgage1, account, customer);
 			} else {

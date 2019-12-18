@@ -17,7 +17,7 @@ public interface UserService {
 
 	public LoginResponseDto loginUser(String mobileNumber, String password);
 	
-	public List<SearchResponseDto> searchAccount(Integer userId, String accountNumber);
+	public List<SearchResponseDto> searchAccount(Integer userId, Long accountNumber);
 
 	List<SearchResponseDto> getAllUser(Integer userId);
 

@@ -61,7 +61,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	AccountComposer<UserDto, User> accountComposer;
 
-	
 	/**
 	 * @description This is the method used to save the user details
 	 * 
@@ -74,7 +73,6 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public RegisterResponseDto createAccount(UserDto userDto)
 			throws PasswordInvalidException, AgeNotMatchedException, MobileNumberExistException {
-		// log.info("saveUser is used to store user details");
 		Account account = new Account();
 		RegisterResponseDto registerResponseDto = new RegisterResponseDto();
 
@@ -83,7 +81,7 @@ public class UserServiceImpl implements UserService {
 		if (userDetails == null) {
 			if (Utils.calculateAge(userDto.getDob()) >= StringConstant.MIN_AGE) {
 
-				if (userDto.getPassword().length() >= StringConstant.PASSWORD_LENGTH) {
+				if (userDto.getPassword().length() >= StringConstant.PASS_LENGTH) {
 					User user = accountComposer.compose(userDto);
 					userRepository.save(user);
 					account = accountService.generateAccount(user.getUserId(), StringConstant.SAVINGS_ACCOUNT_TYPE);
@@ -92,7 +90,7 @@ public class UserServiceImpl implements UserService {
 					registerResponseDto.setBalance(account.getBalance());
 					return registerResponseDto;
 				} else {
-					throw new PasswordInvalidException(StringConstant.PASSWORD_VALIDATION_FAILED);
+					throw new PasswordInvalidException(StringConstant.PASS_VALIDATION_FAILED);
 				}
 			} else {
 				throw new AgeNotMatchedException(StringConstant.AGE_VALIDATION_FAILED);
@@ -103,40 +101,44 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
+	 * @author  Hema
 	 * @description -> getAllUser is used to get all users
 	 * @param userId
 	 * @throws InvalidAdminException
 	 */
 	@Override
 	public List<SearchResponseDto> getAllUser(Integer userId) {
+	
+
+	
 		User user = userRepository.getAdmin(userId, StringConstant.ROLE);
-		logger.info("inside getAllUser " + user.getUserId());
+		logger.info("inside getAllUser");
 		List<SearchResponseDto> searchResponseDtos = new ArrayList<>();
 		if (user != null) {
 			List<User> userList = userRepository.getByRole(StringConstant.CUSTOMER);
 
 			userList.forEach(users -> {
-				logger.info("inside getAllUser " + users.getUserId());
+				logger.info("inside getAllUser");
 
 				SearchResponseDto searchResponseDto = new SearchResponseDto();
-				Account account = accountRepository.getAccountByUserIdAndAccountType(users.getUserId(),
+				Account account = accountRepository.getAccountByUserIdAndAccountType(user.getUserId(),
 						StringConstant.SAVINGS_ACCOUNT_TYPE);
-				Account account1 = accountRepository.getAccountByUserIdAndAccountType(users.getUserId(),
+				Account account1 = accountRepository.getAccountByUserIdAndAccountType(user.getUserId(),
 						StringConstant.MORTGAGE_ACCOUNT_TYPE);
 
 				if (account != null) {
-					logger.info("inside getAllUser " + account.getAccountNumber());
+					logger.info("inside getAllUser");
 					UserListResponseDto userListResponseDto = new UserListResponseDto();
+					
+					
 
 					if (account1 != null) {
 						Mortgage mortgage = mortgageRepository.findByAccountNumber(account1.getAccountNumber());
 						if (mortgage != null) {
-							// BeanUtils.copyProperties(mortgage, userListResponseDto);
 							userListResponseDto.setMortgage(mortgage);
 						}
-						BeanUtils.copyProperties(account1, userListResponseDto);
-						searchResponseDto.setMortgage(userListResponseDto);
-						
+						BeanUtils.copyProperties(account1, userListResponseDto);						
+						searchResponseDto.setMortgage(mortgage);
 					}
 				}
 				BeanUtils.copyProperties(account, searchResponseDto);
@@ -185,13 +187,13 @@ public class UserServiceImpl implements UserService {
 	 * @return mortgage details and user details are fetched
 	 */
 	@Override
-	public List<SearchResponseDto> searchAccount(Integer userId, String accountNumber) {
+	public List<SearchResponseDto> searchAccount(Integer userId, Long accountNumber) {
 		User user = userRepository.findUserByRole(userId, StringConstant.ADMIN_ROLE);
 		List<SearchResponseDto> list = new ArrayList<>();
 		if (user != null) {
-			List<Account> availableList = accountRepository.findByAccountNumber(accountNumber,
+			List<Account> availableList = accountRepository.findByAccountNumber(""+accountNumber,
 					StringConstant.SAVINGS_ACCOUNT_TYPE);
-			log.info("got the account lists" + availableList.size());
+			log.info("got the account lists");
 			availableList.forEach(account -> {
 
 				User user1 = userRepository.findUserByRole(account.getUserId(), StringConstant.CUSTOMER_ROLE);
@@ -211,7 +213,7 @@ public class UserServiceImpl implements UserService {
 							userListResponseDto.setMortgage(mortgage);
 						}
 						BeanUtils.copyProperties(account1, userListResponseDto);
-						searchResponseDto.setMortgage(userListResponseDto);
+						searchResponseDto.setMortgage(mortgage);
 					}
 				}
 				logger.info("inside ZZZZZ " + account.getAccountNumber());

@@ -9,7 +9,7 @@ public interface AccountService {
 
 	public Account getAccountDetails(Integer userId);
 
-	Account createMortgageAccount(Integer userId, Mortgage mortgage);
+	public Account createMortgageAccount(Integer userId, Mortgage mortgage);
 
 	public Boolean getAccountNumber(Long accountNumber);
 

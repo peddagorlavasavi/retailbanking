@@ -26,7 +26,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hcl.retailbanking.dto.AccountSummaryDto;
@@ -35,6 +34,7 @@ import com.hcl.retailbanking.dto.FundTransferResponseDto;
 import com.hcl.retailbanking.dto.TransactionDto;
 import com.hcl.retailbanking.entity.Account;
 import com.hcl.retailbanking.entity.Transaction;
+import com.hcl.retailbanking.exception.CommonException;
 import com.hcl.retailbanking.service.TransactionService;
 import com.hcl.retailbanking.util.StringConstant;
 
@@ -62,7 +62,7 @@ public class TransactionControllerTest {
 
 	MockMvc mockMvc;
 	List<AccountSummaryDto> accountSummaryDtos = new ArrayList<AccountSummaryDto>();
-	AccountSummaryDto accountSummaryDto = new AccountSummaryDto();
+	List<AccountSummaryDto> accountSummaryDto = new ArrayList<>();
 	static Account account = new Account();
 
 	@Before
@@ -71,7 +71,7 @@ public class TransactionControllerTest {
 	}
 
 	@Test
-	public void testFundTransfer() {
+	public void testFundTransfer() throws CommonException {
 		logger.info("Inside the fundTransferTest method");
 		FundTransferRequestDto fundTransferRequestDto = new FundTransferRequestDto();
 		fundTransferRequestDto.setFromAccount(1234567810L);
@@ -116,11 +116,6 @@ public class TransactionControllerTest {
 		transaction.setTransactionId(1);
 		transaction.setFromAccount(1223455L);
 
-		accountSummaryDto.setTransactions(getMockData());
-		accountSummaryDto.setAccount(account);
-		accountSummaryDtos.add(accountSummaryDto);
-
-		mockMvc = MockMvcBuilders.standaloneSetup(transactionController).build();
 	}
 
 	public static List<Transaction> getMockData() {
@@ -135,8 +130,7 @@ public class TransactionControllerTest {
 	@Test
 	public void testGetSummaryForPositive() throws Exception {
 		Integer userId = 123456;
-		 mockMvc
-				.perform(MockMvcRequestBuilders.get("/transactions/" + userId).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(MockMvcRequestBuilders.get("/transactions/" + userId).accept(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 		Mockito.when(transactionService.accountSummary(userId)).thenReturn(accountSummaryDto);
 
@@ -158,13 +152,13 @@ public class TransactionControllerTest {
 		// Mockito.verify(transactionService).accountSummary(userId);
 		assertNotNull(transactionService.accountSummary(userId));
 	}
-	
+
 	static TransactionDto transactionDto = new TransactionDto();
 	static List<Transaction> lstTransaction = new ArrayList<>();
 
 	/**
-	 * @author Sri Keerthna
-	 * Values are initialized for transactionDto, transaction and Accounts
+	 * @author Sri Keerthna Values are initialized for transactionDto, transaction
+	 *         and Accounts
 	 */
 	@Before
 	public void setup() {
@@ -192,9 +186,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Positive test case. If the transactions are available for a particular
-	 * account number then it will return the transactions
+	 * @author Sri Keerthna Positive test case. If the transactions are available
+	 *         for a particular account number then it will return the transactions
 	 */
 	@Test
 	public void viewTransactionsPositiveTest() {
@@ -205,8 +198,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Negative test case. If any value is null then it will return null value
+	 * @author Sri Keerthna Negative test case. If any value is null then it will
+	 *         return null value
 	 */
 	@Test
 	public void viewTransactionsNegativeTest() {
@@ -220,8 +213,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Negative test case. If any value is null then it will return null value
+	 * @author Sri Keerthna Negative test case. If any value is null then it will
+	 *         return null value
 	 */
 	@Test
 	public void viewTransactionsNegativeTestNull() {
@@ -234,8 +227,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Negative test case. If any value is null then it will return null value
+	 * @author Sri Keerthna Negative test case. If any value is null then it will
+	 *         return null value
 	 */
 	@Test
 	public void viewTransactionsNegativeTestNullValue() {
@@ -248,8 +241,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Negative test case. If all values are null then it will return null value
+	 * @author Sri Keerthna Negative test case. If all values are null then it will
+	 *         return null value
 	 */
 	@Test
 	public void viewTransactionsNegativeTestNullValues() {
@@ -264,8 +257,8 @@ public class TransactionControllerTest {
 	}
 
 	/**
-	 * @author Sri Keerthna
-	 * Negative test case. If transactions are not available then it will return an empty list
+	 * @author Sri Keerthna Negative test case. If transactions are not available
+	 *         then it will return an empty list
 	 */
 	@Test
 	public void viewTransactionsNegativeTestEmpty() {

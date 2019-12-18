@@ -47,7 +47,7 @@ public class UserDto {
 	private Integer age;
 	private String address;
 
-	@NotBlank(message = StringConstant.PASSWORD_MANDATORY)
+	@NotBlank(message = StringConstant.PASS_MANDATORY)
 	private String password;
 
 	private String gender;

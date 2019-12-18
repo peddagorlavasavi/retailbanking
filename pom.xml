@@ -17,7 +17,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<sonar.coverage.exclusions>**retailbanking/*,**/config/*,**/entity/*,**/dto/*,**/repository/*,**/commonexception/*,**/errorresponse/*,**/messagecode/*,**/globalexceptionhandler/*,**/util/*</sonar.coverage.exclusions>
+		<sonar.coverage.exclusions>**retailbanking/*,**/config/*,**/entity/*,**/dto/*,**/repository/*,**/exception/*,**/util/*,**/impl/*</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>
@@ -70,12 +70,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<!-- <exclusions>
-				<exclusion>
-					<groupId>org.junit.vintage</groupId>
-					<artifactId>junit-vintage-engine</artifactId>
-				</exclusion>
-			</exclusions> -->
 		</dependency>
 	</dependencies>
 
